@@ -69,6 +69,9 @@
     <ClCompile Include="Framework\AnimationClip.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SceneGame.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AniPlayer.h">
@@ -132,6 +135,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Variables.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGame.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
