@@ -88,18 +88,11 @@ void Player::Update(float dt)
 	{
 		timer += dt;
 		std::cout << dt << std::endl;
-		if (timer >= 1.f)
+		
+		if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 		{
 			isJump = true;
 		}
-		else if (InputMgr::GetKeyUp(sf::Keyboard::Space))
-		{
-			isJumpUp = true;
-		}
-		/*if (InputMgr::GetKeyUp(sf::Keyboard::Space))
-		{
-			isJump = true;
-		}*/
 		/*if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 		{
 			direction.x = 1.f;
@@ -120,7 +113,11 @@ void Player::Update(float dt)
 			direction.x = 0.f;
 		}*/
 	}
-	Jump(dt);
+	if (InputMgr::GetKeyUp(sf::Keyboard::Space))
+	{
+		isJumpUp = true;
+	}
+	ChargeJump(dt);
 	
 }
 
@@ -129,89 +126,89 @@ void Player::Draw(sf::RenderWindow& window)
 	window.draw(character);
 }
 
-void Player::Jump(float dt)
+void Player::ChargeJump(float dt)
 {
-	if (isJump || isJumpUp)
+	if (timer >= 1.f)
 	{
 		if (timer >= 1.f && isJump)
 		{
 			Velocity = { 300.f,-900.f };
 			isJump = false;
-			isJumpUp = false;
 		}
-		else if (timer >= 0.9f && timer < 1.f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.8f && timer < 9.f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.7f && timer < 8.f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.6f && timer < 7.f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.5f && timer < 6.f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.4f && timer < .5f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.3f && timer < 0.4f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.2f && timer < 0.3f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.1f && timer < 0.2f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
-		else if (timer >= 0.f && timer < 0.1f && isJump)
-		{
-
-			Velocity = { 200.f,-200.f };
-			isJump = false;
-			isJumpUp = false;
-		}
+		
 		Velocity.y += gravity * dt;
 		position.x += Velocity.x * direction.x * dt;
 		position.y += Velocity.y * dt;
 		SetPosition(position);
+	}
+	else if (timer != 0)
+	{
+		if (timer >= 0.9f && isJumpUp)
+		{
+			Velocity = { 300.f,-800.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.8f && timer < 0.9f && isJumpUp)
+		{
+			Velocity = { 300.f,-700.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.7f && timer < 0.8f && isJumpUp)
+		{
+			Velocity = { 300.f,-600.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.6f && timer < 0.7f && isJumpUp)
+		{
+			Velocity = { 300.f,-500.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.5f && timer < 0.6f && isJumpUp)
+		{
+			Velocity = { 300.f,-400.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.4f && timer < 0.5f && isJumpUp)
+		{
+			Velocity = { 300.f,-300.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.3f && timer < 0.4f && isJumpUp)
+		{
+			Velocity = { 300.f,-200.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.2f && timer < 0.3f && isJumpUp)
+		{
+			Velocity = { 300.f,-100.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.1f && timer < 0.2f && isJumpUp)
+		{
+			Velocity = { 300.f,-50.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		else if (timer >= 0.f && timer < 0.1f && isJumpUp)
+		{
+			Velocity = { 300.f,-10.f };
+			isJumpUp = false;
+			isJumping = true;
+		}
+		if (isJumping)
+		{
+			Velocity.y += gravity * dt;
+			position.x += Velocity.x * direction.x * dt;
+			position.y += Velocity.y * dt;
+			SetPosition(position);
+		}
 	}
 }

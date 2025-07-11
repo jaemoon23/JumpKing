@@ -15,6 +15,8 @@ protected:
 
     bool isJump = false;
     bool isJumpUp = false;
+    bool isJumping = false;
+
     float timer = 0.f;
     float gravity = 980.f;
 public:
@@ -32,8 +34,6 @@ public:
     void Reset() override;
     void Update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
-    void Jump(float dt);
-
-    float GetDeltaTime();
+    void ChargeJump(float dt);
 };
 
