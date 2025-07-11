@@ -8,7 +8,11 @@ class SceneGame : public Scene
 {
 protected:
 	SpriteGo* back1;
-	SpriteGo* back2;
+	SpriteGo* back1_Fg;
+	SpriteGo* back1_Hit_Mask;
+
+	
+	
 
 	Player* character;
 

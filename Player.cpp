@@ -40,7 +40,7 @@ void Player::SetOrigin(Origins preset)
 
 void Player::Init()
 {
-	
+	maskImage.loadFromFile("graphics/stage1/back_Hit_Mask.png");
 	animator.SetTarget(&character);
 }
 
@@ -50,6 +50,7 @@ void Player::Release()
 
 void Player::Reset()
 {
+	
 	sortingLayer = SortingLayers::Foreground;
 	sortingOrder = 3;
 	animator.Play("animations/Idle.csv");
@@ -58,32 +59,66 @@ void Player::Reset()
 	SetPosition({ 600.f,980.f });
 	SetScale({ 4.0f,3.0f });
 	SetRotation(0);
+
+	/*rect.setSize({ 100.f, 80.f });
+	rect.setFillColor(sf::Color::Transparent);
+	rect.setOutlineColor(sf::Color::Red);
+	rect.setOutlineThickness(0.f);
+	rect.setOrigin({ rect.getSize().x * 0.5f, rect.getSize().y });*/
 }
 
 void Player::Update(float dt)
 {
-	
-	/*if (InputMgr::GetAxis(Axis::Horizontal))
-	{
-		animator.Update(dt);
-		animator.Play("animations/run.csv");
-		direction.x = InputMgr::GetAxis(Axis::Horizontal);
-		pos = GetPosition();
-		pos.x += direction.x * 300.f * dt;
-		
-	}
-	else if (InputMgr::GetKeyDown(sf::Keyboard::Space))
-	{
-		float rd = pos.x * 3.14f / 180;
-		pos += direction * 300.f * dt;
-		pos.y = (sin(rd) * 50) + 800;
-	}
-	else
-	{
-		animator.Update(dt);
-		animator.Play("animations/Idle.csv");
-	}*/
+	//rect.setPosition(GetPosition().x - 20.f, GetPosition().y);
+	/*hitBox.UpdateTransform(rect, rect.getLocalBounds());*/
 
+	scaleX = 1.f / character.getScale().x;
+	scaleY = 1.f / character.getScale().y;
+
+	characterPos = character.getPosition();
+	maskSize = maskImage.getSize();
+	sf::Vector2u maskCoord(characterPos.x * scaleX, characterPos.y * scaleY);
+
+	sf::Color pixelColor = maskImage.getPixel(maskCoord.x, maskCoord.y);
+
+	if (pixelColor == sf::Color::Blue)
+	{
+		std::cout << "벽 충돌!" << std::endl;
+	}
+	if (pixelColor == sf::Color::Black)
+	{
+		std::cout << "착지 충돌!" << std::endl;
+	}
+
+	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
+	{
+		rect.setOrigin({ character.getOrigin().x - 10.f, rect.getSize().y });
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::Right))
+	{
+		rect.setOrigin({ character.getOrigin().x + 30.f, rect.getSize().y});
+	}
+
+	animator.Update(dt);
+	//animator.Play("animations/Idle.csv");
+	direction.x = InputMgr::GetAxis(Axis::Horizontal);
+	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
+	{
+		SetScale({ -4.f, GetScale().y });
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::Right))
+	{
+		SetScale({ 4.f, GetScale().y });
+	}
+
+	pos = GetPosition();
+	pos.x += direction.x * 300.f * dt;
+	if (!(InputMgr::GetKey(sf::Keyboard::Space)))
+	{
+		SetPosition(pos);
+	}
+	
+	// 점프 로직
 	if (InputMgr::GetKey(sf::Keyboard::Space))
 	{
 		timer += dt;
@@ -93,25 +128,16 @@ void Player::Update(float dt)
 		{
 			isJump = true;
 		}
-		/*if (InputMgr::GetKeyDown(sf::Keyboard::Left))
+		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 		{
 			direction.x = 1.f;
 			direction.x *= -1.f;
 		}
-		else if (InputMgr::GetKeyUp(sf::Keyboard::Left))
-		{
-			direction.x = 0.f;
-		}
-
 		if (InputMgr::GetKeyDown(sf::Keyboard::Right))
 		{
 			direction.x = 1.f;
 			direction.x *= 1.f;
 		}
-		else if (InputMgr::GetKeyUp(sf::Keyboard::Right))
-		{
-			direction.x = 0.f;
-		}*/
 	}
 	if (InputMgr::GetKeyUp(sf::Keyboard::Space))
 	{
@@ -124,6 +150,15 @@ void Player::Update(float dt)
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(character);
+	window.draw(rect);
+	/*window.draw(leftArm);
+	window.draw(rightArm);
+	window.draw(head);*/
+
+	hitBox.Draw(window);
+	/*hitBoxLeftArm.Draw(window);
+	hitBoxRightArm.Draw(window);
+	hitBoxHead.Draw(window);*/
 }
 
 void Player::ChargeJump(float dt)
