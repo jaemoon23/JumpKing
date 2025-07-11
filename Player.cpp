@@ -127,7 +127,8 @@ void Player::Draw(sf::RenderWindow& window)
 }
 
 void Player::ChargeJump(float dt)
-{
+{	
+	// 나중에 더 간결하게 수정하기
 	if (timer >= 1.f)
 	{
 		if (timer >= 1.f && isJump)
