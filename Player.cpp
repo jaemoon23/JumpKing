@@ -87,27 +87,131 @@ void Player::Update(float dt)
 	if (InputMgr::GetKey(sf::Keyboard::Space))
 	{
 		timer += dt;
-		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
-		{
-			direction.x *= -1.f;
-		}
-		else if (InputMgr::GetKeyDown(sf::Keyboard::Right))
-		{
-			direction.x *= -1.f;
-		}
+		std::cout << dt << std::endl;
 		if (timer >= 1.f)
 		{
-			Velocity.y += gravity * dt;
-			position.x += Velocity.x * direction.x * dt;
-			position.y += Velocity.y * dt;
-			SetPosition(position);
-			
+			isJump = true;
 		}
+		else if (InputMgr::GetKeyUp(sf::Keyboard::Space))
+		{
+			isJumpUp = true;
+		}
+		/*if (InputMgr::GetKeyUp(sf::Keyboard::Space))
+		{
+			isJump = true;
+		}*/
+		/*if (InputMgr::GetKeyDown(sf::Keyboard::Left))
+		{
+			direction.x = 1.f;
+			direction.x *= -1.f;
+		}
+		else if (InputMgr::GetKeyUp(sf::Keyboard::Left))
+		{
+			direction.x = 0.f;
+		}
+
+		if (InputMgr::GetKeyDown(sf::Keyboard::Right))
+		{
+			direction.x = 1.f;
+			direction.x *= 1.f;
+		}
+		else if (InputMgr::GetKeyUp(sf::Keyboard::Right))
+		{
+			direction.x = 0.f;
+		}*/
 	}
+	Jump(dt);
 	
 }
 
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(character);
+}
+
+void Player::Jump(float dt)
+{
+	if (isJump || isJumpUp)
+	{
+		if (timer >= 1.f && isJump)
+		{
+			Velocity = { 300.f,-900.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.9f && timer < 1.f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.8f && timer < 9.f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.7f && timer < 8.f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.6f && timer < 7.f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.5f && timer < 6.f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.4f && timer < .5f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.3f && timer < 0.4f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.2f && timer < 0.3f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.1f && timer < 0.2f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		else if (timer >= 0.f && timer < 0.1f && isJump)
+		{
+
+			Velocity = { 200.f,-200.f };
+			isJump = false;
+			isJumpUp = false;
+		}
+		Velocity.y += gravity * dt;
+		position.x += Velocity.x * direction.x * dt;
+		position.y += Velocity.y * dt;
+		SetPosition(position);
+	}
 }

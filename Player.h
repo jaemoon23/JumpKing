@@ -11,8 +11,10 @@ protected:
 
     sf::Vector2f pos;
     sf::Vector2f direction = { 1.f,0.f };
-    sf::Vector2f Velocity = { 200.f,-200.f };
+    sf::Vector2f Velocity = { 0.f,0.f };
 
+    bool isJump = false;
+    bool isJumpUp = false;
     float timer = 0.f;
     float gravity = 980.f;
 public:
@@ -30,6 +32,8 @@ public:
     void Reset() override;
     void Update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
+    void Jump(float dt);
 
+    float GetDeltaTime();
 };
 
