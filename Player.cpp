@@ -87,7 +87,14 @@ void Player::Update(float dt)
 	}
 	if (pixelColor == sf::Color::Black)
 	{
+		isGrounded = true;
+		Velocity.y = 0.f;
+		position.y -= 20.f;
 		std::cout << "ÂøÁö Ãæµ¹!" << std::endl;
+	}
+	else
+	{
+		isGrounded = false;
 	}
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
@@ -144,7 +151,6 @@ void Player::Update(float dt)
 		isJumpUp = true;
 	}
 	ChargeJump(dt);
-	
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -171,12 +177,16 @@ void Player::ChargeJump(float dt)
 			Velocity = { 300.f,-900.f };
 			isJump = false;
 		}
+		if (!isGrounded)
+		{
+			Velocity.y += gravity * dt;
+			position.x += Velocity.x * direction.x * dt;
+			position.y += Velocity.y * dt;
+			SetPosition(position);
+		}
+		}
 		
-		Velocity.y += gravity * dt;
-		position.x += Velocity.x * direction.x * dt;
-		position.y += Velocity.y * dt;
-		SetPosition(position);
-	}
+		
 	else if (timer != 0)
 	{
 		if (timer >= 0.9f && isJumpUp)
@@ -241,10 +251,14 @@ void Player::ChargeJump(float dt)
 		}
 		if (isJumping)
 		{
-			Velocity.y += gravity * dt;
-			position.x += Velocity.x * direction.x * dt;
-			position.y += Velocity.y * dt;
-			SetPosition(position);
+			if (!isGrounded)
+			{
+				Velocity.y += gravity * dt;
+				position.x += Velocity.x * direction.x * dt;
+				position.y += Velocity.y * dt;
+				SetPosition(position);
+			}
+			
 		}
 	}
 }

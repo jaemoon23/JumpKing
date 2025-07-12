@@ -21,14 +21,13 @@ protected:
     sf::Vector2f direction = { 1.f,0.f };
     sf::Vector2f Velocity = { 0.f,0.f };
    
-
     sf::Vector2f characterPos;
     sf::Vector2u maskSize;
     
-
     bool isJump = false;
     bool isJumpUp = false;
     bool isJumping = false;
+    bool isGrounded = false;
 
     float scaleX;
     float scaleY;
