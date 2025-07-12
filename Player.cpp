@@ -26,7 +26,7 @@ void Player::SetScale(const sf::Vector2f& s)
 void Player::SetOrigin(const sf::Vector2f& o)
 {
 	GameObject::SetOrigin(o);
-	character.setOrigin(position);
+	character.setOrigin(o);
 }
 
 void Player::SetOrigin(Origins preset)
@@ -50,7 +50,6 @@ void Player::Release()
 
 void Player::Reset()
 {
-	
 	sortingLayer = SortingLayers::Foreground;
 	sortingOrder = 3;
 	animator.Play("animations/Idle.csv");
@@ -59,19 +58,14 @@ void Player::Reset()
 	SetPosition({ 600.f,980.f });
 	SetScale({ 4.0f,3.0f });
 	SetRotation(0);
-
-	/*rect.setSize({ 100.f, 80.f });
-	rect.setFillColor(sf::Color::Transparent);
-	rect.setOutlineColor(sf::Color::Red);
-	rect.setOutlineThickness(0.f);
-	rect.setOrigin({ rect.getSize().x * 0.5f, rect.getSize().y });*/
+	
 }
 
 void Player::Update(float dt)
 {
-	//rect.setPosition(GetPosition().x - 20.f, GetPosition().y);
-	/*hitBox.UpdateTransform(rect, rect.getLocalBounds());*/
+	animator.Update(dt);
 
+#pragma region 픽셀단위 충돌체크
 	scaleX = 1.f / character.getScale().x;
 	scaleY = 1.f / character.getScale().y;
 
@@ -80,35 +74,9 @@ void Player::Update(float dt)
 	sf::Vector2u maskCoord(characterPos.x * scaleX, characterPos.y * scaleY);
 
 	sf::Color pixelColor = maskImage.getPixel(maskCoord.x, maskCoord.y);
+#pragma endregion
 
-	if (pixelColor == sf::Color::Blue)
-	{
-		std::cout << "벽 충돌!" << std::endl;
-	}
-	if (pixelColor == sf::Color::Black)
-	{
-		isGrounded = true;
-		Velocity.y = 0.f;
-		position.y -= 20.f;
-		std::cout << "착지 충돌!" << std::endl;
-	}
-	else
-	{
-		isGrounded = false;
-	}
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
-	{
-		rect.setOrigin({ character.getOrigin().x - 10.f, rect.getSize().y });
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Right))
-	{
-		rect.setOrigin({ character.getOrigin().x + 30.f, rect.getSize().y});
-	}
-
-	animator.Update(dt);
-	//animator.Play("animations/Idle.csv");
-	direction.x = InputMgr::GetAxis(Axis::Horizontal);
+	// 이동로직
 	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 	{
 		SetScale({ -4.f, GetScale().y });
@@ -117,148 +85,69 @@ void Player::Update(float dt)
 	{
 		SetScale({ 4.f, GetScale().y });
 	}
-
+	direction.x = InputMgr::GetAxis(Axis::Horizontal);
 	pos = GetPosition();
 	pos.x += direction.x * 300.f * dt;
-	if (!(InputMgr::GetKey(sf::Keyboard::Space)))
-	{
-		SetPosition(pos);
-	}
-	
-	// 점프 로직
+	SetPosition(pos);
+
+	// 차지점프 로직
 	if (InputMgr::GetKey(sf::Keyboard::Space))
 	{
 		timer += dt;
-		std::cout << dt << std::endl;
-		
-		if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+		if (timer > 1.0f)
 		{
-			isJump = true;
+			ChargeJump(ChargeType::Max);
+			isJumping = true;
 		}
-		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
-		{
-			direction.x = 1.f;
-			direction.x *= -1.f;
-		}
-		if (InputMgr::GetKeyDown(sf::Keyboard::Right))
-		{
-			direction.x = 1.f;
-			direction.x *= 1.f;
-		}
+		std::cout << timer * 1 << std::endl;
 	}
 	if (InputMgr::GetKeyUp(sf::Keyboard::Space))
 	{
-		isJumpUp = true;
+		if (timer >= 0.5f)
+		{
+			ChargeJump(ChargeType::Medium);
+		}
+		else
+		{
+			ChargeJump(ChargeType::Low);
+		}
+		isJumping = true;
 	}
-	ChargeJump(dt);
+
+	if (isJumping)
+	{
+		Velocity.x = direction.x * 300.f;
+		Velocity.y += gravity * dt;
+		pos.y += Velocity.y * dt;
+		SetPosition(pos);
+	}
+	
 }
 
 void Player::Draw(sf::RenderWindow& window)
 {
 	window.draw(character);
-	window.draw(rect);
-	/*window.draw(leftArm);
-	window.draw(rightArm);
-	window.draw(head);*/
-
-	hitBox.Draw(window);
-	/*hitBoxLeftArm.Draw(window);
-	hitBoxRightArm.Draw(window);
-	hitBoxHead.Draw(window);*/
 }
 
-void Player::ChargeJump(float dt)
-{	
-	// 나중에 더 간결하게 수정하기
-	if (timer >= 1.f)
+void Player::ChargeJump(ChargeType type)
+{
+	switch (type)
 	{
-		if (timer >= 1.f && isJump)
-		{
-			Velocity = { 300.f,-900.f };
-			isJump = false;
-		}
-		if (!isGrounded)
-		{
-			Velocity.y += gravity * dt;
-			position.x += Velocity.x * direction.x * dt;
-			position.y += Velocity.y * dt;
-			SetPosition(position);
-		}
-		}
-		
-		
-	else if (timer != 0)
-	{
-		if (timer >= 0.9f && isJumpUp)
-		{
-			Velocity = { 300.f,-800.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.8f && timer < 0.9f && isJumpUp)
-		{
-			Velocity = { 300.f,-700.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.7f && timer < 0.8f && isJumpUp)
-		{
-			Velocity = { 300.f,-600.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.6f && timer < 0.7f && isJumpUp)
-		{
-			Velocity = { 300.f,-500.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.5f && timer < 0.6f && isJumpUp)
-		{
-			Velocity = { 300.f,-400.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.4f && timer < 0.5f && isJumpUp)
-		{
-			Velocity = { 300.f,-300.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.3f && timer < 0.4f && isJumpUp)
-		{
-			Velocity = { 300.f,-200.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.2f && timer < 0.3f && isJumpUp)
-		{
-			Velocity = { 300.f,-100.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.1f && timer < 0.2f && isJumpUp)
-		{
-			Velocity = { 300.f,-50.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		else if (timer >= 0.f && timer < 0.1f && isJumpUp)
-		{
-			Velocity = { 300.f,-10.f };
-			isJumpUp = false;
-			isJumping = true;
-		}
-		if (isJumping)
-		{
-			if (!isGrounded)
-			{
-				Velocity.y += gravity * dt;
-				position.x += Velocity.x * direction.x * dt;
-				position.y += Velocity.y * dt;
-				SetPosition(position);
-			}
-			
-		}
+	case ChargeType::Max:
+		Velocity.x = 500.f;
+		Velocity.y = -600.f;
+		break;
+	case ChargeType::Medium:
+		Velocity.x = 300.f;
+		Velocity.y = -300.f;
+		break;
+	case ChargeType::Low:
+		Velocity.x = 200.f;
+		Velocity.y = -150.f;
+		break;
+	default:
+		break;
 	}
 }
+
+

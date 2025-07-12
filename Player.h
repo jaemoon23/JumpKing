@@ -3,6 +3,13 @@
 #include "Animator.h"
 #include "HitBox.h"
 
+enum class ChargeType
+{
+    Max,
+	Medium,
+	Low
+};
+
 class Player : public GameObject
 {
 protected:
@@ -10,7 +17,6 @@ protected:
     Animator animator;
 
     sf::RectangleShape rect;
-  
 
     HitBox hitBox;
     
@@ -23,12 +29,10 @@ protected:
    
     sf::Vector2f characterPos;
     sf::Vector2u maskSize;
-    
-    bool isJump = false;
-    bool isJumpUp = false;
-    bool isJumping = false;
-    bool isGrounded = false;
 
+	bool isJumping = false;
+	bool jump = false;
+       
     float scaleX;
     float scaleY;
     float timer = 0.f;
@@ -48,6 +52,9 @@ public:
     void Reset() override;
     void Update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
-    void ChargeJump(float dt);
+
+    void ChargeJump(ChargeType type);
+
+
 };
 
