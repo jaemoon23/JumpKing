@@ -13,6 +13,13 @@ enum class ChargeType
 class Player : public GameObject
 {
 protected:
+
+    // 히트박스
+    sf::RectangleShape rectLeftArm;
+    sf::RectangleShape rectRightArm;
+    sf::RectangleShape rectLeg;
+    sf::RectangleShape rectHead;
+
     sf::Sprite character;
     Animator animator;
 
@@ -25,13 +32,14 @@ protected:
 
     sf::Vector2f pos;
     sf::Vector2f direction = { 1.f,0.f };
+    sf::Vector2f jumpDirection = { 0.f,0.f };
     sf::Vector2f Velocity = { 0.f,0.f };
    
     sf::Vector2f characterPos;
     sf::Vector2u maskSize;
 
 	bool isJumping = false;
-	bool jump = false;
+	bool jump = true;
        
     float scaleX;
     float scaleY;
@@ -54,6 +62,8 @@ public:
     void Draw(sf::RenderWindow& window) override;
 
     void ChargeJump(ChargeType type);
+
+    void HitBox();
 
 
 };
