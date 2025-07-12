@@ -17,11 +17,14 @@ void SceneGame::Init()
 	ANI_CLIP_MGR.Load("animations/Idle.csv");
 	ANI_CLIP_MGR.Load("animations/run.csv");
 
+	
 	back1_Hit_Mask = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/back_Hit_Mask.png"));
 	back1 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/back1.png"));
 	back1_Fg = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/fg1.png"));
 	character = (Player*)AddGameObject(new Player("graphics/Character_Move_Sprite.png"));
+	
 	Scene::Init();
+	
 }
 
 void SceneGame::Enter()
@@ -46,6 +49,8 @@ void SceneGame::Enter()
 	back1_Fg->SetScale({ 4.f, 3.f });
 	back1_Fg->sortingLayer = SortingLayers::Background;
 	back1_Fg->sortingOrder = 2;
+
+	
 }
 
 void SceneGame::Update(float dt)

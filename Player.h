@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Animator.h"
 #include "HitBox.h"
+#include "SpriteGo.h"
 
 enum class ChargeType
 {
@@ -13,6 +14,8 @@ enum class ChargeType
 class Player : public GameObject
 {
 protected:
+    // 공통사용
+    sf::FloatRect windowBound;
 
     // 히트박스
     sf::RectangleShape rectLeftArm;
@@ -20,31 +23,35 @@ protected:
     sf::RectangleShape rectLeg;
     sf::RectangleShape rectHead;
 
+    // 충돌체크 
+    sf::Image maskImage;
+    sf::Vector2u maskSize;
+    sf::Vector2f rectLeftPos;
+    sf::Vector2f rightArmPos;
+    sf::Vector2f leftArmPos;
+    sf::Vector2f headPos;
+   
+    bool check = false;
+    float scaleX;
+    float scaleY;
+
+    // 그리기
+    std::string texId = "graphics/Character_Move_Sprite.png";
     sf::Sprite character;
     Animator animator;
 
-    sf::RectangleShape rect;
-
-    HitBox hitBox;
-    
-    sf::Image maskImage;
-    std::string texId = "graphics/Character_Move_Sprite.png";
-
+    // 이동
     sf::Vector2f pos;
     sf::Vector2f direction = { 1.f,0.f };
     sf::Vector2f jumpDirection = { 0.f,0.f };
     sf::Vector2f Velocity = { 0.f,0.f };
    
-    sf::Vector2f characterPos;
-    sf::Vector2u maskSize;
-
 	bool isJumping = false;
 	bool jump = true;
-       
-    float scaleX;
-    float scaleY;
+
     float timer = 0.f;
     float gravity = 980.f;
+
 public:
     Player(const std::string name = "");
     ~Player() override = default;
@@ -64,7 +71,10 @@ public:
     void ChargeJump(ChargeType type);
 
     void HitBox();
-
+    void CheckCollision_Leg();
+    void CheckCollision_RightArm();
+    void CheckCollision_LeftArm();
+    void CheckCollision_Head();
 
 };
 

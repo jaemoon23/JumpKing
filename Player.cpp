@@ -83,20 +83,19 @@ void Player::Reset()
 	rectLeg.setOutlineColor(sf::Color::Green);
 	rectLeg.setOutlineThickness(1.f);
 	rectLeg.setSize({ 40.f, 20.f });
-	
-	
-	
-	
+
+	windowBound = FRAMEWORK.GetWindowBounds();
 }
 
 void Player::Update(float dt)
 {
 	animator.Update(dt);
 
-	
+	// 히트박스
 	HitBox();
 
 	// 이동로직
+	
 	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 	{
 		SetScale({ -4.f, GetScale().y });
@@ -109,13 +108,16 @@ void Player::Update(float dt)
 	pos = GetPosition();
 	pos.x += direction.x * 300.f * dt;
 	SetPosition(pos);
+	
+	
 
 	// 차지점프 로직
-	if (InputMgr::GetKey(sf::Keyboard::Space))
+	if (InputMgr::GetKey(sf::Keyboard::Space) && jump)
 	{
+		check = true;
 		jumpDirection = direction;
 		timer += dt;
-		if (timer > 1.0f && jump)
+		if (timer > 1.0f)
 		{
 			ChargeJump(ChargeType::Max);
 			jump = false;
@@ -123,13 +125,13 @@ void Player::Update(float dt)
 		}
 		std::cout << timer * 1 << std::endl;
 	}
-	if (InputMgr::GetKeyUp(sf::Keyboard::Space))
+	if (InputMgr::GetKeyUp(sf::Keyboard::Space) && jump)
 	{
-		if (timer >= 0.5f && jump)
+		if (timer >= 0.5f)
 		{
 			ChargeJump(ChargeType::Medium);
 		}
-		else if (timer >= 0.f && jump)
+		else if (timer >= 0.f)
 		{
 			ChargeJump(ChargeType::Low);
 		}
@@ -145,14 +147,10 @@ void Player::Update(float dt)
 	}
 	
 	// 픽셀단위 충돌체크
-	scaleX = 1.f / character.getScale().x;
-	scaleY = 1.f / character.getScale().y;
-
-	characterPos = character.getPosition();
-	maskSize = maskImage.getSize();
-	sf::Vector2u maskCoord(characterPos.x * scaleX, characterPos.y * scaleY);
-
-	sf::Color pixelColor = maskImage.getPixel(maskCoord.x, maskCoord.y);
+	CheckCollision_Head();
+	CheckCollision_Leg();
+	CheckCollision_RightArm();
+	CheckCollision_LeftArm();
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -165,7 +163,6 @@ void Player::Draw(sf::RenderWindow& window)
 		window.draw(rectRightArm);
 		window.draw(rectLeg);
 	}
-	
 }
 
 void Player::ChargeJump(ChargeType type)
@@ -173,21 +170,25 @@ void Player::ChargeJump(ChargeType type)
 	switch (type)
 	{
 	case ChargeType::Max:
-		Velocity.x = 500.f * jumpDirection.x ;
-		Velocity.y = -600.f;
+		Velocity.x = 300.f * jumpDirection.x ;
+		Velocity.y = -1000.f;
+		gravity = 980.f;
 		break;
 	case ChargeType::Medium:
 		Velocity.x = 300.f * jumpDirection.x;
-		Velocity.y = -300.f;
+		Velocity.y = -600.f;
+		gravity = 980.f;
 		break;
 	case ChargeType::Low:
 		Velocity.x = 200.f * jumpDirection.x;
-		Velocity.y = -150.f;
+		Velocity.y = -300.f;
+		gravity = 980.f;
 		break;
 	default:
 		break;
 	}
 }
+
 void Player::HitBox()
 {
 	rectLeg.setPosition(GetPosition().x - 40.f, GetPosition().y - 20.f);
@@ -208,6 +209,109 @@ void Player::HitBox()
 		rectRightArm.setOrigin(0.f, 0.f);
 		rectLeftArm.setOrigin(0.f, 0.f);
 		rectHead.setOrigin(0.f, 0.f);
+	}
+}
+
+void Player::CheckCollision_Leg()
+{
+	scaleX = 1.f / character.getScale().x;
+	scaleY = 1.f / character.getScale().y;
+	rectLeftPos = rectLeg.getPosition();
+	maskSize = maskImage.getSize();
+
+	sf::Vector2u maskCoord_Leg(rectLeftPos.x * scaleX, rectLeftPos.y * scaleY);
+
+	sf::Color pixelColor_Leg = maskImage.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
+	if (pixelColor_Leg == sf::Color::Black && check)
+	{
+		Velocity.y = 0.f;
+		Velocity.x = 0.f;
+		gravity = 0.f;
+		timer = 0.f;
+		SetPosition({ GetPosition().x, character.getPosition().y - 1.f });
+		check = false;
+		isJumping = false;  // 이제 공중 아님
+		jump = true;   // 다음 점프 허용
+	}
+}
+
+void Player::CheckCollision_RightArm()
+{
+	scaleX = 1.f / character.getScale().x;
+	scaleY = 1.f / character.getScale().y;
+	rightArmPos = rectRightArm.getPosition();
+	maskSize = maskImage.getSize();
+
+	sf::Vector2u maskCoord_RightArm(rightArmPos.x * scaleX, rightArmPos.y * scaleY);
+
+	sf::Color pixelColor_RightArm = maskImage.getPixel(maskCoord_RightArm.x, maskCoord_RightArm.y);
+	if (pixelColor_RightArm == sf::Color::Blue)
+	{
+		if ((windowBound.width * 0.5f) > GetPosition().x)
+		{
+			SetPosition({ GetPosition().x + 1.f, character.getPosition().y});
+			std::cout << "왼벽 충돌" << std::endl;
+		}
+		if ((windowBound.width * 0.5f) < GetPosition().x)
+		{
+			SetPosition({ GetPosition().x - 1.f, character.getPosition().y });
+			std::cout << "오른벽 충돌" << std::endl;
+		}
+		Velocity.x = -Velocity.x;
+	}
+}
+
+void Player::CheckCollision_LeftArm()
+{
+	scaleX = 1.f / character.getScale().x;
+	scaleY = 1.f / character.getScale().y;
+	leftArmPos = rectLeftArm.getPosition();
+	maskSize = maskImage.getSize();
+
+	sf::Vector2u maskCoord_LeftArm(leftArmPos.x * scaleX, leftArmPos.y * scaleY);
+
+	sf::Color pixelColor_LeftArm = maskImage.getPixel(maskCoord_LeftArm.x, maskCoord_LeftArm.y);
+	if (pixelColor_LeftArm == sf::Color::Blue)
+	{
+		if ((windowBound.width * 0.5f) > GetPosition().x)
+		{
+			SetPosition({ GetPosition().x + 1.f, character.getPosition().y });
+			std::cout << "왼벽 충돌" << std::endl;
+		}
+		if ((windowBound.width * 0.5f) < GetPosition().x)
+		{
+			SetPosition({ GetPosition().x - 1.f, character.getPosition().y });
+			std::cout << "오른벽 충돌" << std::endl;
+		}
+		Velocity.x = -Velocity.x;
+		
+	}
+}
+
+void Player::CheckCollision_Head()
+{
+	scaleX = 1.f / character.getScale().x;
+	scaleY = 1.f / character.getScale().y;
+	headPos = rectHead.getPosition();
+	maskSize = maskImage.getSize();
+
+	sf::Vector2u maskCoord_Head(headPos.x * scaleX, headPos.y * scaleY);
+
+	sf::Color pixelColor_Head = maskImage.getPixel(maskCoord_Head.x, maskCoord_Head.y);
+	if (pixelColor_Head == sf::Color::Blue)
+	{
+		if ((windowBound.width * 0.5f) > GetPosition().x)
+		{
+			SetPosition({ GetPosition().x + 1.f, character.getPosition().y });
+			std::cout << "왼벽 충돌" << std::endl;
+		}
+		if ((windowBound.width * 0.5f) < GetPosition().x)
+		{
+			SetPosition({ GetPosition().x - 1.f, character.getPosition().y });
+			std::cout << "오른벽 충돌" << std::endl;
+		}
+		Velocity.x = -Velocity.x;
+
 	}
 }
 

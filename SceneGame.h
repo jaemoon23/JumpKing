@@ -11,9 +11,6 @@ protected:
 	SpriteGo* back1_Fg;
 	SpriteGo* back1_Hit_Mask;
 
-	
-	
-
 	Player* character;
 
 	sf::Vector2f windowSize;
