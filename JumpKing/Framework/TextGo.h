@@ -15,6 +15,7 @@ public:
 	void SetFontId(const std::string& fId) { fontId = fId; }
 
 	void SetString(const std::string& str);
+	void SetString(const std::wstring& str);
 	void SetCharacterSize(unsigned int size);
 	void SetFillColor(const sf::Color& color);
 	std::string GetString() const;

@@ -11,6 +11,11 @@ void TextGo::SetString(const std::string& str)
 	text.setString(str);
 	Utils::SetOrigin(text, originPreset);
 }
+void TextGo::SetString(const std::wstring& str)
+{
+	text.setString(str);
+	Utils::SetOrigin(text, originPreset);
+}
 
 void TextGo::SetCharacterSize(unsigned int size)
 {
