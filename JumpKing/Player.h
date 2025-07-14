@@ -31,6 +31,12 @@ protected:
     sf::Vector2f rightArmPos;
     sf::Vector2f leftArmPos;
     sf::Vector2f headPos;
+
+    bool reg = true;
+    bool LeftArm = true;
+    bool RightArm = true;
+    bool Head = true;
+
   
     float scaleX;
     float scaleY;

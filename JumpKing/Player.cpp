@@ -83,7 +83,7 @@ void Player::Reset()
 	rectLeg.setFillColor(sf::Color::Transparent);
 	rectLeg.setOutlineColor(sf::Color::Green);
 	rectLeg.setOutlineThickness(1.f);
-	rectLeg.setSize({ 40.f, 20.f });
+	rectLeg.setSize({ 40.f, 0.f });
 
 	windowBound = FRAMEWORK.GetWindowBounds();
 }
@@ -91,8 +91,12 @@ void Player::Reset()
 void Player::Update(float dt)
 {
 	animator.Update(dt);
-	// 히트박스
-	HitBox();
+	
+	// 픽셀단위 충돌체크
+	CheckCollision_RightArm();
+	CheckCollision_LeftArm();
+	CheckCollision_Head();
+	CheckCollision_Leg(dt);
 
 	// 이동로직
 	direction.x = InputMgr::GetAxis(Axis::Horizontal);
@@ -116,7 +120,6 @@ void Player::Update(float dt)
 		pos.x += direction.x * 300.f * dt;
 		SetPosition(pos);
 	}
-		
 	
 	// 차지점프 로직
 	if (!isJumping)
@@ -153,12 +156,9 @@ void Player::Update(float dt)
 		pos += Velocity * dt;
 		SetPosition(pos);
 	}
-	
-	// 픽셀단위 충돌체크
-	CheckCollision_RightArm();
-	CheckCollision_LeftArm();
-	CheckCollision_Head();
-	CheckCollision_Leg(dt);
+
+	// 히트박스
+	HitBox();
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -187,7 +187,7 @@ void Player::ChargeJump(ChargeType type)
 		break;
 	case ChargeType::Medium:
 		Velocity.x = 400.f * direction.x;
-		Velocity.y = -600.f;
+		Velocity.y = -800.f;
 		gravity = 1000.f;
 		break;
 	case ChargeType::Low:
@@ -202,7 +202,7 @@ void Player::ChargeJump(ChargeType type)
 
 void Player::HitBox()
 {
-	rectLeg.setPosition(GetPosition().x - 20.f, GetPosition().y - 20.f);
+	rectLeg.setPosition(GetPosition().x - 20.f, GetPosition().y);
 	rectRightArm.setPosition(GetPosition().x + 40.f, GetPosition().y - 60.f);
 	rectLeftArm.setPosition(GetPosition().x - 40.f, GetPosition().y - 60.f);
 	rectHead.setPosition(GetPosition().x , GetPosition().y - 90.f);
@@ -225,7 +225,7 @@ void Player::CheckCollision_Leg(float dt)
 		isJumping = false;
 		isJumpChargeActive = false;
 		timer = 0.f;
-		SetPosition({ GetPosition().x, character.getPosition().y - 1.f });
+		SetPosition({ GetPosition().x, character.getPosition().y - 30.f });
 		
 	}
 	if (pixelColor_Leg1 == sf::Color::White)
@@ -287,7 +287,8 @@ void Player::CheckCollision_LeftArm()
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
-			SetPosition({ GetPosition().x + 5.f, character.getPosition().y });
+			//pos.x = batBounds2.left + 30.f;
+
 			std::cout << "왼벽 충돌" << std::endl;
 			animator.Play("animations/hit.csv");
 		}
@@ -316,7 +317,7 @@ void Player::CheckCollision_Head()
 	{
 		
 		std::cout << "위쪽 벽 충돌" << std::endl;
-		SetPosition({ GetPosition().x + 5.f, character.getPosition().y });
+		SetPosition({ GetPosition().x, character.getPosition().y + 20.f});
 		animator.Play("animations/hit.csv");
 		Velocity.x = -Velocity.x;
 		Velocity.y = -Velocity.y;
