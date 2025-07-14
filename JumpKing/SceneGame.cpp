@@ -47,7 +47,7 @@ void SceneGame::Enter()
 {
 
 	windowSize = FRAMEWORK.GetWindowSizeF();
-	worldView.setSize({ 5760.f, 3240.f });
+	worldView.setSize({ 1920.f, 1080.f });
 	worldView.setCenter(windowSize.x * 0.5f , windowSize.y * 0.5f + 2160.f);
 
 	uiView.setSize(windowSize);
@@ -69,11 +69,6 @@ void SceneGame::Enter()
 	back1_Fg->sortingOrder = 2;
 	back1_Fg->SetPosition({ 0.f, 2160.f });
 
-	/*back2_Hit_Mask->SetScale({ 4.f,3.f });
-	back2_Hit_Mask->sortingLayer = SortingLayers::Background;
-	back2_Hit_Mask->sortingOrder = 0;
- 	back2_Hit_Mask->SetPosition({ back1->GetPosition().x, back1->GetPosition().y - 1080.f });*/
-
 	back2->SetScale({ 2.f,3.f });
 	back2->sortingLayer = SortingLayers::Background;
 	back2->sortingOrder = 1;
@@ -87,6 +82,15 @@ void SceneGame::Enter()
 
 void SceneGame::Update(float dt)
 {
+	if (character->GetPosition().y < 2160)
+	{
+		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
+	}
+	else if (character->GetPosition().y > 2160)
+	{
+		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 2160.f);
+	}
+
 	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left))
 	{
 		sf::Vector2i mouse = InputMgr::GetMousePosition();

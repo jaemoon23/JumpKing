@@ -219,19 +219,16 @@ void Player::CheckCollision_Leg(float dt)
 	sf::Vector2u maskCoord_Leg(rectLeftPos.x * scaleX, rectLeftPos.y * scaleY);
 
 	sf::Color pixelColor_Leg1 = maskImage.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
-	//sf::Color pixelColor_Leg2 = maskImage2.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
-	if (pixelColor_Leg1 == sf::Color::Black /*|| pixelColor_Leg2 == sf::Color::Black*/)
+	
+	if (pixelColor_Leg1 == sf::Color::Black )
 	{
 		isJumping = false;
 		isJumpChargeActive = false;
-		/*Velocity.y = 0.f;
-		Velocity.x = 0.f;
-		gravity = 0.f;*/
 		timer = 0.f;
 		SetPosition({ GetPosition().x, character.getPosition().y - 1.f });
 		
 	}
-	if (pixelColor_Leg1 == sf::Color::White /*|| pixelColor_Leg2 == sf::Color::White*/)
+	if (pixelColor_Leg1 == sf::Color::White)
 	{
 		if (Velocity.y >= 0)
 		{
@@ -256,9 +253,8 @@ void Player::CheckCollision_RightArm()
 	sf::Vector2u maskCoord_RightArm(rightArmPos.x * scaleX, rightArmPos.y * scaleY);
 
 	sf::Color pixelColor_RightArm = maskImage.getPixel(maskCoord_RightArm.x, maskCoord_RightArm.y);
-	//sf::Color pixelColor_RightArm2 = maskImage2.getPixel(maskCoord_RightArm.x, maskCoord_RightArm.y);
 
-	if (pixelColor_RightArm == sf::Color::Blue /*|| pixelColor_RightArm2 == sf::Color::Blue*/)
+	if (pixelColor_RightArm == sf::Color::Blue)
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
@@ -273,7 +269,6 @@ void Player::CheckCollision_RightArm()
 			animator.Play("animations/hit.csv");
 		}
 		Velocity.x = -Velocity.x;
-		//direction.x *= -1.f;
 	}
 }
 
@@ -287,9 +282,8 @@ void Player::CheckCollision_LeftArm()
 	sf::Vector2u maskCoord_LeftArm(leftArmPos.x * scaleX, leftArmPos.y * scaleY);
 
 	sf::Color pixelColor_LeftArm = maskImage.getPixel(maskCoord_LeftArm.x, maskCoord_LeftArm.y);
-	//sf::Color pixelColor_LeftArm2 = maskImage2.getPixel(maskCoord_LeftArm.x, maskCoord_LeftArm.y);
 
-	if (pixelColor_LeftArm == sf::Color::Blue /*|| pixelColor_LeftArm2 == sf::Color::Blue*/)
+	if (pixelColor_LeftArm == sf::Color::Blue)
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
@@ -304,7 +298,6 @@ void Player::CheckCollision_LeftArm()
 			animator.Play("animations/hit.csv");
 		}
 		Velocity.x = -Velocity.x;
-		//direction.x *= -1.f;
 	}
 }
 
@@ -318,24 +311,15 @@ void Player::CheckCollision_Head()
 	sf::Vector2u maskCoord_Head(headPos.x * scaleX, headPos.y * scaleY);
 
 	sf::Color pixelColor_Head = maskImage.getPixel(maskCoord_Head.x, maskCoord_Head.y);
-	//sf::Color pixelColor_Head2 = maskImage2.getPixel(maskCoord_Head.x, maskCoord_Head.y);
 
-	if (pixelColor_Head == sf::Color::Blue /*|| pixelColor_Head2 == sf::Color::Blue*/)
+	if (pixelColor_Head == sf::Color::Blue)
 	{
-		if ((windowBound.width * 0.5f) > GetPosition().x)
-		{
-			SetPosition({ GetPosition().x + 5.f, character.getPosition().y });
-			std::cout << "왼벽 충돌" << std::endl;
-			animator.Play("animations/hit.csv");
-		}
-		if ((windowBound.width * 0.5f) < GetPosition().x)
-		{
-			SetPosition({ GetPosition().x - 5.f, character.getPosition().y });
-			std::cout << "오른벽 충돌" << std::endl;
-			animator.Play("animations/hit.csv");
-		}
+		
+		std::cout << "위쪽 벽 충돌" << std::endl;
+		SetPosition({ GetPosition().x + 5.f, character.getPosition().y });
+		animator.Play("animations/hit.csv");
 		Velocity.x = -Velocity.x;
-		//direction.x *= -1.f;
+		Velocity.y = -Velocity.y;
 	}
 }
 
