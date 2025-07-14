@@ -13,7 +13,10 @@ protected:
 
 	SpriteGo* back2;
 	SpriteGo* back2_Fg;
-	SpriteGo* back2_Hit_Mask;
+
+	SpriteGo* back3;
+	SpriteGo* back3_Fg;
+	
 
 	Player* character;
 

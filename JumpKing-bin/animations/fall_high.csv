@@ -1,0 +1,5 @@
+﻿ID,FPS,"LoopType (0: Single, 1: Loop)",,,
+fall_high,10,0,,,
+,,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:Fale, 1:True)"
+graphics/Character_Sprite.png,114,32,38,32,0

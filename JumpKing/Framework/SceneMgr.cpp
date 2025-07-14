@@ -3,12 +3,14 @@
 #include "SceneDev1.h"
 #include "SceneDev2.h"
 #include "SceneGame.h"
+#include "TitleScene.h"
 
 void SceneMgr::Init()
 {
 	//scenes.insert({ SceneIds::Dev1 ,new SceneDev1() });
 	//scenes.insert({ SceneIds::Dev2 ,new SceneDev2() });
 	scenes.insert({ SceneIds::Game ,new SceneGame() });
+	scenes.insert({ SceneIds::Game ,new TitleScene() });
 	
 
 	for (auto scene : scenes)

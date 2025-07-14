@@ -32,10 +32,10 @@ protected:
     sf::Vector2f leftArmPos;
     sf::Vector2f headPos;
 
-    bool reg = true;
-    bool LeftArm = true;
-    bool RightArm = true;
-    bool Head = true;
+    bool isActiveReg = true;
+    bool isActiveLeftArm = true;
+    bool isActiveRightArm = true;
+    bool isActiveHead = true;
 
   
     float scaleX;
@@ -52,9 +52,11 @@ protected:
     sf::Vector2f jumpDirection = { 0.f,0.f };
     sf::Vector2f Velocity = { 0.f,0.f };
 
+    bool isHighFall = true;
     bool isJumpChargeActive = false;
     bool isJumping = false;
  
+    float fallStartPos = 0.f;
     float timer = 0.f;
     float gravity = 0.f;
 
