@@ -83,7 +83,7 @@ void Player::Reset()
 	rectLeg.setFillColor(sf::Color::Transparent);
 	rectLeg.setOutlineColor(sf::Color::Green);
 	rectLeg.setOutlineThickness(1.f);
-	rectLeg.setSize({ 40.f, 0.f });
+	rectLeg.setSize({ 20.f, 20.f });
 
 	windowBound = FRAMEWORK.GetWindowBounds();
 }
@@ -93,19 +93,16 @@ void Player::Update(float dt)
 	animator.Update(dt);
 	
 	// 픽셀단위 충돌체크
-	CheckCollision_RightArm();
-	CheckCollision_LeftArm();
-	CheckCollision_Head();
-	CheckCollision_Leg(dt);
-
+	
+	
 	// 이동로직
 	direction.x = InputMgr::GetAxis(Axis::Horizontal);
 	if (!isJumpChargeActive)
 	{
 		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 		{
-			animator.Play("animations/run.csv");
 			SetScale({ -4.f, GetScale().y });
+			animator.Play("animations/run.csv");
 		}
 		if (InputMgr::GetKeyDown(sf::Keyboard::Right))
 		{
@@ -156,7 +153,10 @@ void Player::Update(float dt)
 		pos += Velocity * dt;
 		SetPosition(pos);
 	}
-
+	CheckCollision_Leg(dt);
+	CheckCollision_RightArm();
+	CheckCollision_LeftArm();
+	CheckCollision_Head();
 	// 히트박스
 	HitBox();
 }
@@ -202,7 +202,7 @@ void Player::ChargeJump(ChargeType type)
 
 void Player::HitBox()
 {
-	rectLeg.setPosition(GetPosition().x - 20.f, GetPosition().y);
+	rectLeg.setPosition(GetPosition().x, GetPosition().y - 20.f);
 	rectRightArm.setPosition(GetPosition().x + 40.f, GetPosition().y - 60.f);
 	rectLeftArm.setPosition(GetPosition().x - 40.f, GetPosition().y - 60.f);
 	rectHead.setPosition(GetPosition().x , GetPosition().y - 90.f);
@@ -210,32 +210,59 @@ void Player::HitBox()
 
 void Player::CheckCollision_Leg(float dt)
 {
-	scaleX = 1.f / character.getScale().x;
-	scaleY = 1.f / character.getScale().y;
+	scaleX = 1.f / std::abs(character.getScale().x);
+	scaleY = 1.f / std::abs(character.getScale().y);
 	rectLeftPos = rectLeg.getPosition();
 	maskSize = maskImage.getSize();
+
+
+	sf::Vector2u maskCoord_Leg1(rectLeftPos.x * scaleX, rectLeftPos.y * scaleY);
+	sf::Vector2u maskCoord_Leg2((rectLeftPos.x + 10.f) * scaleX, rectLeftPos.y * scaleY);
+	sf::Vector2u maskCoord_Leg3((rectLeftPos.x + 20.f) * scaleX, rectLeftPos.y * scaleY);
+
+	sf::Vector2u maskCoord_Leg4(rectLeftPos.x * scaleX, (rectLeftPos.y + 20.f) * scaleY);
+	sf::Vector2u maskCoord_Leg5((rectLeftPos.x + 10.f) * scaleX, (rectLeftPos.y + 20.f) * scaleY);
+	sf::Vector2u maskCoord_Leg6((rectLeftPos.x + 20.f) * scaleX, (rectLeftPos.y + 20.f) * scaleY);
+	
 	
 
-	sf::Vector2u maskCoord_Leg(rectLeftPos.x * scaleX, rectLeftPos.y * scaleY);
+	sf::Color pixelColor_Leg1 = maskImage.getPixel(maskCoord_Leg1.x, maskCoord_Leg1.y);
+	sf::Color pixelColor_Leg2 = maskImage.getPixel(maskCoord_Leg2.x, maskCoord_Leg2.y);
+	sf::Color pixelColor_Leg3 = maskImage.getPixel(maskCoord_Leg3.x, maskCoord_Leg3.y);
 
-	sf::Color pixelColor_Leg1 = maskImage.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
+	sf::Color pixelColor_Leg4 = maskImage.getPixel(maskCoord_Leg4.x, maskCoord_Leg4.y);
+	sf::Color pixelColor_Leg5 = maskImage.getPixel(maskCoord_Leg5.x, maskCoord_Leg5.y);
+	sf::Color pixelColor_Leg6 = maskImage.getPixel(maskCoord_Leg6.x, maskCoord_Leg6.y);
 	
-	if (pixelColor_Leg1 == sf::Color::Black )
+	
+	
+	if (pixelColor_Leg1 == sf::Color::Black &&
+		pixelColor_Leg2 == sf::Color::Black && 
+		pixelColor_Leg3 == sf::Color::Black && 
+		pixelColor_Leg4 == sf::Color::Black && 
+		pixelColor_Leg5 == sf::Color::Black &&
+		pixelColor_Leg6 == sf::Color::Black)
 	{
 		isJumping = false;
 		isJumpChargeActive = false;
 		timer = 0.f;
-		SetPosition({ GetPosition().x, character.getPosition().y - 30.f });
+		SetPosition({ GetPosition().x, character.getPosition().y - 1.f });
 		
 	}
-	if (pixelColor_Leg1 == sf::Color::White)
+	if 
+		(/*pixelColor_Leg1 == sf::Color::White &&
+		pixelColor_Leg2 == sf::Color::White &&
+		pixelColor_Leg3 == sf::Color::White &&*/
+		pixelColor_Leg4 == sf::Color::White &&
+		pixelColor_Leg5 == sf::Color::White &&
+		pixelColor_Leg6 == sf::Color::White)
 	{
 		if (Velocity.y >= 0)
 		{
 			animator.Play("animations/fall.csv");
 		}
 		gravity = 1000.f;
-		Velocity.y += gravity * dt;
+        Velocity.y += gravity * dt;
 		pos += Velocity * dt;
 		SetPosition(pos);
 		

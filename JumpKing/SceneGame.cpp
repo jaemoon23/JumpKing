@@ -57,22 +57,22 @@ void SceneGame::Enter()
 	back1_Hit_Mask->sortingOrder = 0;
 	back1_Hit_Mask->SetPosition({ 0.f, 0.f });
 
-	back1->SetScale({ 0.f,0.f });
+	back1->SetScale({ 4.f,3.f });
 	back1->sortingLayer = SortingLayers::Background;
 	back1->sortingOrder = 1;
 	back1->SetPosition({ 0.f, 2160.f });
 
-	back1_Fg->SetScale({ 0.f,0.f });
+	back1_Fg->SetScale({ 4.f,3.f });
 	back1_Fg->sortingLayer = SortingLayers::Background;
 	back1_Fg->sortingOrder = 2;
 	back1_Fg->SetPosition({ 0.f, 2160.f });
 
-	back2->SetScale({ 0.f,0.f });
+	back2->SetScale({ 4.f,3.f });
 	back2->sortingLayer = SortingLayers::Background;
 	back2->sortingOrder = 1;
 	back2->SetPosition({ back1->GetPosition().x, back1->GetPosition().y - 1080.f });
 
-	back2_Fg->SetScale({ 0.f,0.f });
+	back2_Fg->SetScale({ 4.f,3.f });
 	back2_Fg->sortingLayer = SortingLayers::Background;
 	back2_Fg->sortingOrder = 2;
 	back2_Fg->SetPosition({ back1->GetPosition().x, back1->GetPosition().y - 1080.f });
