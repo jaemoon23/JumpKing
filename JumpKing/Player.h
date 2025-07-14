@@ -25,6 +25,7 @@ protected:
 
     // 충돌체크 
     sf::Image maskImage;
+    sf::Image maskImage2;
     sf::Vector2u maskSize;
     sf::Vector2f rectLeftPos;
     sf::Vector2f rightArmPos;

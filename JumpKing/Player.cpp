@@ -41,6 +41,7 @@ void Player::SetOrigin(Origins preset)
 void Player::Init()
 {
 	maskImage.loadFromFile("graphics/stage1/back_Hit_Mask.png");
+	maskImage2.loadFromFile("graphics/stage2/back_Hit_Mask2.png");
 	animator.SetTarget(&character);
 }
 
@@ -55,7 +56,7 @@ void Player::Reset()
 	animator.Play("animations/Idle.csv");
 	character.setTexture(TEXTURE_MGR.Get(texId));
 	SetOrigin(Origins::BC);
-	SetPosition({ 600.f,980.f });
+	SetPosition({ 600.f,3150.f });
 	SetScale({ 4.0f,3.0f });
 	SetRotation(0);
 
@@ -90,12 +91,10 @@ void Player::Reset()
 void Player::Update(float dt)
 {
 	animator.Update(dt);
-
 	// 히트박스
 	HitBox();
 
 	// 이동로직
-
 	direction.x = InputMgr::GetAxis(Axis::Horizontal);
 	if (!isJumpChargeActive)
 	{
@@ -178,6 +177,7 @@ void Player::ChargeJump(ChargeType type)
 {
 	animator.Play("animations/jump_move.csv");
 	isJumping = true;
+	
 	switch (type)
 	{
 	case ChargeType::Max:
@@ -214,11 +214,13 @@ void Player::CheckCollision_Leg(float dt)
 	scaleY = 1.f / character.getScale().y;
 	rectLeftPos = rectLeg.getPosition();
 	maskSize = maskImage.getSize();
+	
 
 	sf::Vector2u maskCoord_Leg(rectLeftPos.x * scaleX, rectLeftPos.y * scaleY);
 
-	sf::Color pixelColor_Leg = maskImage.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
-	if (pixelColor_Leg == sf::Color::Black)
+	sf::Color pixelColor_Leg1 = maskImage.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
+	//sf::Color pixelColor_Leg2 = maskImage2.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
+	if (pixelColor_Leg1 == sf::Color::Black /*|| pixelColor_Leg2 == sf::Color::Black*/)
 	{
 		isJumping = false;
 		isJumpChargeActive = false;
@@ -229,7 +231,7 @@ void Player::CheckCollision_Leg(float dt)
 		SetPosition({ GetPosition().x, character.getPosition().y - 1.f });
 		
 	}
-	if (pixelColor_Leg == sf::Color::White)
+	if (pixelColor_Leg1 == sf::Color::White /*|| pixelColor_Leg2 == sf::Color::White*/)
 	{
 		if (Velocity.y >= 0)
 		{
@@ -241,6 +243,7 @@ void Player::CheckCollision_Leg(float dt)
 		SetPosition(pos);
 		
 	}
+	
 }
 
 void Player::CheckCollision_RightArm()
@@ -253,17 +256,19 @@ void Player::CheckCollision_RightArm()
 	sf::Vector2u maskCoord_RightArm(rightArmPos.x * scaleX, rightArmPos.y * scaleY);
 
 	sf::Color pixelColor_RightArm = maskImage.getPixel(maskCoord_RightArm.x, maskCoord_RightArm.y);
-	if (pixelColor_RightArm == sf::Color::Blue)
+	//sf::Color pixelColor_RightArm2 = maskImage2.getPixel(maskCoord_RightArm.x, maskCoord_RightArm.y);
+
+	if (pixelColor_RightArm == sf::Color::Blue /*|| pixelColor_RightArm2 == sf::Color::Blue*/)
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
-			SetPosition({ GetPosition().x + 3.f, character.getPosition().y});
+			SetPosition({ GetPosition().x + 5.f, character.getPosition().y});
 			std::cout << "왼벽 충돌" << std::endl;
 			animator.Play("animations/hit.csv");
-		}
+ 		}
 		if ((windowBound.width * 0.5f) < GetPosition().x)
 		{
-			SetPosition({ GetPosition().x - 3.f, character.getPosition().y });
+			SetPosition({ GetPosition().x - 5.f, character.getPosition().y });
 			std::cout << "오른벽 충돌" << std::endl;
 			animator.Play("animations/hit.csv");
 		}
@@ -282,17 +287,19 @@ void Player::CheckCollision_LeftArm()
 	sf::Vector2u maskCoord_LeftArm(leftArmPos.x * scaleX, leftArmPos.y * scaleY);
 
 	sf::Color pixelColor_LeftArm = maskImage.getPixel(maskCoord_LeftArm.x, maskCoord_LeftArm.y);
-	if (pixelColor_LeftArm == sf::Color::Blue)
+	//sf::Color pixelColor_LeftArm2 = maskImage2.getPixel(maskCoord_LeftArm.x, maskCoord_LeftArm.y);
+
+	if (pixelColor_LeftArm == sf::Color::Blue /*|| pixelColor_LeftArm2 == sf::Color::Blue*/)
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
-			SetPosition({ GetPosition().x + 3.f, character.getPosition().y });
+			SetPosition({ GetPosition().x + 5.f, character.getPosition().y });
 			std::cout << "왼벽 충돌" << std::endl;
 			animator.Play("animations/hit.csv");
 		}
 		if ((windowBound.width * 0.5f) < GetPosition().x)
 		{
-			SetPosition({ GetPosition().x - 3.f, character.getPosition().y });
+			SetPosition({ GetPosition().x - 5.f, character.getPosition().y });
 			std::cout << "오른벽 충돌" << std::endl;
 			animator.Play("animations/hit.csv");
 		}
@@ -311,17 +318,19 @@ void Player::CheckCollision_Head()
 	sf::Vector2u maskCoord_Head(headPos.x * scaleX, headPos.y * scaleY);
 
 	sf::Color pixelColor_Head = maskImage.getPixel(maskCoord_Head.x, maskCoord_Head.y);
-	if (pixelColor_Head == sf::Color::Blue)
+	//sf::Color pixelColor_Head2 = maskImage2.getPixel(maskCoord_Head.x, maskCoord_Head.y);
+
+	if (pixelColor_Head == sf::Color::Blue /*|| pixelColor_Head2 == sf::Color::Blue*/)
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
-			SetPosition({ GetPosition().x + 3.f, character.getPosition().y });
+			SetPosition({ GetPosition().x + 5.f, character.getPosition().y });
 			std::cout << "왼벽 충돌" << std::endl;
 			animator.Play("animations/hit.csv");
 		}
 		if ((windowBound.width * 0.5f) < GetPosition().x)
 		{
-			SetPosition({ GetPosition().x - 3.f, character.getPosition().y });
+			SetPosition({ GetPosition().x - 5.f, character.getPosition().y });
 			std::cout << "오른벽 충돌" << std::endl;
 			animator.Play("animations/hit.csv");
 		}
