@@ -12,16 +12,20 @@ void SceneGame::Init()
 	texIds.push_back("graphics/stage1/back_Hit_Mask.png");
 	texIds.push_back("graphics/stage1/back1.png");
 	texIds.push_back("graphics/stage1/fg1.png");
-	texIds.push_back("graphics/Character_Move_Sprite.png");
+	texIds.push_back("graphics/Character_Sprite.png");
+	
 
 	ANI_CLIP_MGR.Load("animations/Idle.csv");
 	ANI_CLIP_MGR.Load("animations/run.csv");
+	ANI_CLIP_MGR.Load("animations/jump.csv");
+	ANI_CLIP_MGR.Load("animations/hit.csv");
+	ANI_CLIP_MGR.Load("animations/jump_move.csv");
 
 	
 	back1_Hit_Mask = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/back_Hit_Mask.png"));
 	back1 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/back1.png"));
 	back1_Fg = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/fg1.png"));
-	character = (Player*)AddGameObject(new Player("graphics/Character_Move_Sprite.png"));
+	character = (Player*)AddGameObject(new Player("graphics/Character_Sprite.png"));
 	
 	Scene::Init();
 	
@@ -42,11 +46,11 @@ void SceneGame::Enter()
 	back1_Hit_Mask->sortingLayer = SortingLayers::Background;
 	back1_Hit_Mask->sortingOrder = 0;
 
-	back1->SetScale({ 4.f, 3.f });
+	back1->SetScale({ 2.f,3.f });
 	back1->sortingLayer = SortingLayers::Background;
 	back1->sortingOrder = 1;
 
-	back1_Fg->SetScale({ 4.f, 3.f });
+	back1_Fg->SetScale({ 1.f,3.f });
 	back1_Fg->sortingLayer = SortingLayers::Background;
 	back1_Fg->sortingOrder = 2;
 

@@ -30,13 +30,12 @@ protected:
     sf::Vector2f rightArmPos;
     sf::Vector2f leftArmPos;
     sf::Vector2f headPos;
-   
-    bool check = false;
+  
     float scaleX;
     float scaleY;
 
     // ±×¸®±â
-    std::string texId = "graphics/Character_Move_Sprite.png";
+    std::string texId = "graphics/Character_Sprite.png";
     sf::Sprite character;
     Animator animator;
 
@@ -45,12 +44,9 @@ protected:
     sf::Vector2f direction = { 1.f,0.f };
     sf::Vector2f jumpDirection = { 0.f,0.f };
     sf::Vector2f Velocity = { 0.f,0.f };
-   
-	bool isJumping = false;
-	bool jump = true;
-
+ 
     float timer = 0.f;
-    float gravity = 980.f;
+    float gravity = 0.f;
 
 public:
     Player(const std::string name = "");
@@ -71,7 +67,7 @@ public:
     void ChargeJump(ChargeType type);
 
     void HitBox();
-    void CheckCollision_Leg();
+    void CheckCollision_Leg(float dt);
     void CheckCollision_RightArm();
     void CheckCollision_LeftArm();
     void CheckCollision_Head();

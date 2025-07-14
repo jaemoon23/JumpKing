@@ -64,7 +64,7 @@ void Player::Reset()
 	rectHead.setFillColor(sf::Color::Transparent);
 	rectHead.setOutlineColor(sf::Color::Green);
 	rectHead.setOutlineThickness(1.f);
-	rectHead.setSize({ 40.f, 20.f });
+	rectHead.setSize({ 20.f, 20.f });
 
 	// 왼팔
 	rectLeftArm.setFillColor(sf::Color::Transparent);
@@ -95,16 +95,23 @@ void Player::Update(float dt)
 	HitBox();
 
 	// 이동로직
-	
+
+	direction.x = InputMgr::GetAxis(Axis::Horizontal);
 	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 	{
+		animator.Play("animations/run.csv");
 		SetScale({ -4.f, GetScale().y });
 	}
 	if (InputMgr::GetKeyDown(sf::Keyboard::Right))
 	{
 		SetScale({ 4.f, GetScale().y });
+		animator.Play("animations/run.csv");
 	}
-	direction.x = InputMgr::GetAxis(Axis::Horizontal);
+	if (InputMgr::GetKey(sf::Keyboard::Right) == 0 && (InputMgr::GetKey(sf::Keyboard::Left) == 0))
+	{
+		animator.Play("animations/Idle.csv");
+	}
+		
 	pos = GetPosition();
 	pos.x += direction.x * 300.f * dt;
 	SetPosition(pos);
@@ -112,20 +119,18 @@ void Player::Update(float dt)
 	
 
 	// 차지점프 로직
-	if (InputMgr::GetKey(sf::Keyboard::Space) && jump)
+	if (InputMgr::GetKey(sf::Keyboard::Space))
 	{
-		check = true;
+		animator.Play("animations/jump.csv");
 		jumpDirection = direction;
 		timer += dt;
 		if (timer > 1.0f)
 		{
 			ChargeJump(ChargeType::Max);
-			jump = false;
-			isJumping = true;
 		}
 		std::cout << timer * 1 << std::endl;
 	}
-	if (InputMgr::GetKeyUp(sf::Keyboard::Space) && jump)
+	if (InputMgr::GetKeyUp(sf::Keyboard::Space))
 	{
 		if (timer >= 0.5f)
 		{
@@ -135,22 +140,16 @@ void Player::Update(float dt)
 		{
 			ChargeJump(ChargeType::Low);
 		}
-		jump = false;
-		isJumping = true;
-	}
-	if (isJumping)
-	{
-		Velocity.x += Velocity.x * dt;
-		Velocity.y += gravity * dt;
-		pos += Velocity * dt;
-		SetPosition(pos);
 	}
 	
+	Velocity.y += gravity * dt;
+	pos += Velocity * dt;
+	SetPosition(pos);
 	// 픽셀단위 충돌체크
-	CheckCollision_Head();
-	CheckCollision_Leg();
 	CheckCollision_RightArm();
 	CheckCollision_LeftArm();
+	CheckCollision_Head();
+	CheckCollision_Leg(dt);
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -170,19 +169,19 @@ void Player::ChargeJump(ChargeType type)
 	switch (type)
 	{
 	case ChargeType::Max:
-		Velocity.x = 300.f * jumpDirection.x ;
+		Velocity.x = 400.f * direction.x ;
 		Velocity.y = -1000.f;
-		gravity = 980.f;
+		gravity = 1000.f;
 		break;
 	case ChargeType::Medium:
-		Velocity.x = 300.f * jumpDirection.x;
+		Velocity.x = 400.f * direction.x;
 		Velocity.y = -600.f;
-		gravity = 980.f;
+		gravity = 1000.f;
 		break;
 	case ChargeType::Low:
-		Velocity.x = 200.f * jumpDirection.x;
+		Velocity.x = 400.f * direction.x;
 		Velocity.y = -300.f;
-		gravity = 980.f;
+		gravity = 1000.f;
 		break;
 	default:
 		break;
@@ -191,28 +190,13 @@ void Player::ChargeJump(ChargeType type)
 
 void Player::HitBox()
 {
-	rectLeg.setPosition(GetPosition().x - 40.f, GetPosition().y - 20.f);
-	rectRightArm.setPosition(GetPosition().x + 10.f, GetPosition().y - 60.f);
-	rectLeftArm.setPosition(GetPosition().x - 75.f, GetPosition().y - 60.f);
-	rectHead.setPosition(GetPosition().x - 40.f, GetPosition().y - 90.f);
-
-	if (InputMgr::GetKeyDown(sf::Keyboard::Left))
-	{
-		rectLeg.setOrigin(-40.f, 0.f);
-		rectRightArm.setOrigin(-40.f, 0.f);
-		rectLeftArm.setOrigin(-50.f, 0.f);
-		rectHead.setOrigin(-40.f, 0.f);
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Right))
-	{
-		rectLeg.setOrigin(0.f, 0.f);
-		rectRightArm.setOrigin(0.f, 0.f);
-		rectLeftArm.setOrigin(0.f, 0.f);
-		rectHead.setOrigin(0.f, 0.f);
-	}
+	rectLeg.setPosition(GetPosition().x - 20.f, GetPosition().y - 20.f);
+	rectRightArm.setPosition(GetPosition().x + 40.f, GetPosition().y - 60.f);
+	rectLeftArm.setPosition(GetPosition().x - 40.f, GetPosition().y - 60.f);
+	rectHead.setPosition(GetPosition().x , GetPosition().y - 90.f);
 }
 
-void Player::CheckCollision_Leg()
+void Player::CheckCollision_Leg(float dt)
 {
 	scaleX = 1.f / character.getScale().x;
 	scaleY = 1.f / character.getScale().y;
@@ -222,16 +206,20 @@ void Player::CheckCollision_Leg()
 	sf::Vector2u maskCoord_Leg(rectLeftPos.x * scaleX, rectLeftPos.y * scaleY);
 
 	sf::Color pixelColor_Leg = maskImage.getPixel(maskCoord_Leg.x, maskCoord_Leg.y);
-	if (pixelColor_Leg == sf::Color::Black && check)
+	if (pixelColor_Leg == sf::Color::Black)
 	{
 		Velocity.y = 0.f;
 		Velocity.x = 0.f;
 		gravity = 0.f;
 		timer = 0.f;
 		SetPosition({ GetPosition().x, character.getPosition().y - 1.f });
-		check = false;
-		isJumping = false;  // 이제 공중 아님
-		jump = true;   // 다음 점프 허용
+		
+	}
+	if (pixelColor_Leg == sf::Color::White)
+	{
+		gravity = 1000.f;
+		/*pos.x += direction.x * 300.f * dt;
+		SetPosition(pos);*/
 	}
 }
 
@@ -249,15 +237,18 @@ void Player::CheckCollision_RightArm()
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
-			SetPosition({ GetPosition().x + 1.f, character.getPosition().y});
+			SetPosition({ GetPosition().x + 3.f, character.getPosition().y});
 			std::cout << "왼벽 충돌" << std::endl;
+			animator.Play("animations/hit.csv");
 		}
 		if ((windowBound.width * 0.5f) < GetPosition().x)
 		{
-			SetPosition({ GetPosition().x - 1.f, character.getPosition().y });
+			SetPosition({ GetPosition().x - 3.f, character.getPosition().y });
 			std::cout << "오른벽 충돌" << std::endl;
+			animator.Play("animations/hit.csv");
 		}
 		Velocity.x = -Velocity.x;
+		//direction.x *= -1.f;
 	}
 }
 
@@ -275,16 +266,18 @@ void Player::CheckCollision_LeftArm()
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
-			SetPosition({ GetPosition().x + 1.f, character.getPosition().y });
+			SetPosition({ GetPosition().x + 3.f, character.getPosition().y });
 			std::cout << "왼벽 충돌" << std::endl;
+			animator.Play("animations/hit.csv");
 		}
 		if ((windowBound.width * 0.5f) < GetPosition().x)
 		{
-			SetPosition({ GetPosition().x - 1.f, character.getPosition().y });
+			SetPosition({ GetPosition().x - 3.f, character.getPosition().y });
 			std::cout << "오른벽 충돌" << std::endl;
+			animator.Play("animations/hit.csv");
 		}
 		Velocity.x = -Velocity.x;
-		
+		//direction.x *= -1.f;
 	}
 }
 
@@ -302,16 +295,18 @@ void Player::CheckCollision_Head()
 	{
 		if ((windowBound.width * 0.5f) > GetPosition().x)
 		{
-			SetPosition({ GetPosition().x + 1.f, character.getPosition().y });
+			SetPosition({ GetPosition().x + 3.f, character.getPosition().y });
 			std::cout << "왼벽 충돌" << std::endl;
+			animator.Play("animations/hit.csv");
 		}
 		if ((windowBound.width * 0.5f) < GetPosition().x)
 		{
-			SetPosition({ GetPosition().x - 1.f, character.getPosition().y });
+			SetPosition({ GetPosition().x - 3.f, character.getPosition().y });
 			std::cout << "오른벽 충돌" << std::endl;
+			animator.Play("animations/hit.csv");
 		}
 		Velocity.x = -Velocity.x;
-
+		//direction.x *= -1.f;
 	}
 }
 
