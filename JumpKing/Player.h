@@ -8,6 +8,7 @@ enum class ChargeType
 {
     Max,
 	Medium,
+    MediumLow,
 	Low
 };
 

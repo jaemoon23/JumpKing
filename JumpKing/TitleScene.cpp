@@ -72,12 +72,12 @@ void TitleScene::Enter()
 	exit->sortingOrder = 0;
 
 	cursor->SetPosition({ start->GetPosition().x - 150.f , start->GetPosition().y + 50.f });
-	cursor->sortingLayer = SortingLayers::UI;
 	cursor->SetOrigin(Origins::MC);
 	cursor->SetActive(false);
 	cursor->SetScale({ 4.f,3.f });
+	cursor->sortingLayer = SortingLayers::UI;
 	cursor->sortingOrder = 1;
-	cursor->SetActive(false);
+	
 	
 	
 	Scene::Enter();
