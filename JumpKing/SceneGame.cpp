@@ -22,8 +22,23 @@ void SceneGame::Init()
 
 	texIds.push_back("graphics/stage3/back3.png");
 	texIds.push_back("graphics/stage3/fg3.png");
+
+	soundIds.push_back("Audio/Nature bg.wav");
+	soundIds.push_back("Audio/menu_open.wav");
+	soundIds.push_back("Audio/king_bump.wav");
+	soundIds.push_back("Audio/king_jump.wav");
+	soundIds.push_back("Audio/king_splat.wav");
+	soundIds.push_back("Audio/king_land.wav");
+
+	SOUNDBUFFER_MGR.Load("Audio/Nature bg.wav");
+	SOUNDBUFFER_MGR.Load("Audio/menu_open.wav");
+	SOUNDBUFFER_MGR.Load("Audio/king_bump.wav");
+	SOUNDBUFFER_MGR.Load("Audio/king_jump.wav");
+	SOUNDBUFFER_MGR.Load("Audio/king_splat.wav");
+	SOUNDBUFFER_MGR.Load("Audio/king_land.wav");
 	
-	
+
+
 	ANI_CLIP_MGR.Load("animations/Idle.csv");
 	ANI_CLIP_MGR.Load("animations/run.csv");
 	ANI_CLIP_MGR.Load("animations/jump.csv");
@@ -69,7 +84,8 @@ void SceneGame::Init()
 
 void SceneGame::Enter()
 {
-
+	Scene::Enter();
+	SOUND_MGR.PlayBgm("Audio/Nature bg.wav");
 	bounds = FRAMEWORK.GetWindowBounds();
 	windowSize = FRAMEWORK.GetWindowSizeF();
 	worldView.setSize(windowSize);
@@ -114,7 +130,7 @@ void SceneGame::Enter()
 	back3_Fg->sortingLayer = SortingLayers::Background;
 	back3_Fg->sortingOrder = 2;
 	back3_Fg->SetPosition({ back1->GetPosition().x, back2->GetPosition().y - 1080.f });
-	Scene::Enter();
+	
 #pragma endregion
 
 #pragma region UI
@@ -203,6 +219,7 @@ void SceneGame::Update(float dt)
 
 	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
 	{
+		SOUND_MGR.PlaySfx("Audio/menu_open.wav");
 		isEsc = !isEsc; 
 		if (isEsc)
 		{
@@ -248,7 +265,7 @@ void SceneGame::Update(float dt)
 		}
 		if ((InputMgr::GetKeyDown(sf::Keyboard::Space)))
 		{
-			
+			SOUND_MGR.PlaySfx("Audio/menu_open.wav");
 			if (isPressTitle)
 			{
 				isEsc = false;

@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "TextGo.h"
 #include "SpriteGo.h"
-
+#include "SoundMgr.h"
 class TitleScene :
     public Scene
 {
@@ -16,6 +16,8 @@ protected:
 	SpriteGo* title_logo = nullptr;
 	SpriteGo* cursor = nullptr;
 	SpriteGo* frame = nullptr;
+
+	
 
 	sf::Vector2f windowSize;
 

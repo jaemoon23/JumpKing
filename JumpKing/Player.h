@@ -33,10 +33,16 @@ protected:
     sf::Vector2f leftArmPos;
     sf::Vector2f headPos;
 
-    bool isActiveReg = true;
+    sf::Vector2f playerPos = { 0.f,0.f };
+
+    bool isActiveLeg = true;
     bool isActiveLeftArm = true;
     bool isActiveRightArm = true;
     bool isActiveHead = true;
+
+    bool onGround = false;
+    bool wasOnGround = false;
+   
 
     float scaleX;
     float scaleY;

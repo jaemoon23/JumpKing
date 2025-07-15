@@ -13,7 +13,10 @@ void TitleScene::ChangeScene()
 
 void TitleScene::Enter()
 {
-	
+	SOUNDBUFFER_MGR.Load("Audio/menu_intro.wav");
+	SOUNDBUFFER_MGR.Load("Audio/press_start.wav");
+	SOUNDBUFFER_MGR.Load("Audio/menu_open.wav");
+	SOUND_MGR.PlayBgm("Audio/menu_intro.wav");
 	windowSize = FRAMEWORK.GetWindowSizeF();
 	worldView.setSize(windowSize);
 	worldView.setCenter(windowSize * 0.5f);
@@ -88,9 +91,13 @@ void TitleScene::Init()
 	texIds.push_back("graphics/title_logo.png");
 	texIds.push_back("graphics/gui/frame.png");
 	texIds.push_back("graphics/gui/cursor.png");
+
 	fontIds.push_back("fonts/ttf_double_homicide.ttf");
 	fontIds.push_back("fonts/ttf_entercommand_bold.ttf");
+
 	soundIds.push_back("Audio/menu_intro.wav");
+	soundIds.push_back("Audio/press_start.wav");
+	soundIds.push_back("Audio/menu_open.wav");
 	
 	
 	Scene::Init();
@@ -114,6 +121,7 @@ void TitleScene::Update(float dt)
 		}
 		if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 		{
+			SOUND_MGR.PlaySfx("Audio/press_start.wav");
 			timer = 0.f;
 			startScene = false;
 			start_Space->SetActive(false);
@@ -156,9 +164,8 @@ void TitleScene::Update(float dt)
 				startScene = true;
 				menuScene = false;
 				isPressTitle = false;
-				
+				SOUND_MGR.PlayBgm("Audio/menu_open.wav");
 				SCENE_MGR.ChangeScene(SceneIds::Game);
-				
 			}
 			if (isPressExit)
 			{
