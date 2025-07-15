@@ -152,6 +152,7 @@ void Player::Update(float dt)
 		Velocity.y += gravity * dt;
 		pos += Velocity * dt;
 		SetPosition(pos);
+		
 	}
 	CheckCollision_Leg(dt);
 	if (isActiveRightArm)
@@ -187,7 +188,7 @@ void Player::ChargeJump(ChargeType type)
 {
 	animator.Play("animations/jump_move.csv");
 	isJumping = true;
-	
+	jumpCount++;
 	switch (type)
 	{
 	case ChargeType::Max:

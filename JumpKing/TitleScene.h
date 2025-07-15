@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "TextGo.h"
 #include "SpriteGo.h"
+
 class TitleScene :
     public Scene
 {

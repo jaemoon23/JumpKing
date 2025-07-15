@@ -30,7 +30,6 @@ protected:
 	SpriteGo* back3;
 	SpriteGo* back3_Fg;
 	
-
 	Player* character;
 
 	sf::Vector2f windowSize;
@@ -40,6 +39,13 @@ protected:
 	bool isPressExit = false;
 	bool isEsc = false;
 
+	int hour = 0;
+	int minute = 0;
+	int second = 0;
+
+	float time = 0.f;
+
+	int count = 0;
 public:
 	SceneGame();
 	~SceneGame() override = default;

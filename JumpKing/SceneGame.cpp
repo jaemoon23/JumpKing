@@ -64,11 +64,12 @@ void SceneGame::Init()
 	menu6 = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 #pragma endregion
 	Scene::Init();
-	FRAMEWORK.SetTimeScale(1.f);
+	
 }
 
 void SceneGame::Enter()
 {
+
 	bounds = FRAMEWORK.GetWindowBounds();
 	windowSize = FRAMEWORK.GetWindowSizeF();
 	worldView.setSize(windowSize);
@@ -133,23 +134,23 @@ void SceneGame::Enter()
 	menu1->SetString("jaemoon");
 	menu1->SetCharacterSize(100);
 	menu1->SetFillColor(sf::Color::White);
-	menu1->SetPosition({ frame1->GetPosition().x + 150.f, frame1->GetPosition().y + 50.f});
+	menu1->SetPosition({ frame1->GetPosition().x + 100.f, frame1->GetPosition().y + 50.f});
 	menu1->sortingLayer = SortingLayers::UI;
 	menu1->sortingOrder = 0;
 	menu1->SetActive(false);
 
-	menu2->SetString("time");
+	menu2->SetString("Time");
 	menu2->SetCharacterSize(100);
 	menu2->SetFillColor(sf::Color::White);
-	menu2->SetPosition({ frame1->GetPosition().x + 150.f, frame1->GetPosition().y + 150.f });
+	menu2->SetPosition({ frame1->GetPosition().x + 100.f, frame1->GetPosition().y + 150.f });
 	menu2->sortingLayer = SortingLayers::UI;
 	menu2->sortingOrder = 0;
 	menu2->SetActive(false);
 
-	menu3->SetString("Jump");
+	menu3->SetString("Jump: ");
 	menu3->SetCharacterSize(100);
 	menu3->SetFillColor(sf::Color::White);
-	menu3->SetPosition({ frame1->GetPosition().x + 150.f, frame1->GetPosition().y + 250.f });
+	menu3->SetPosition({ frame1->GetPosition().x + 100.f, frame1->GetPosition().y + 250.f });
 	menu3->sortingLayer = SortingLayers::UI;
 	menu3->sortingOrder = 0;
 	menu3->SetActive(false);
@@ -193,11 +194,25 @@ void SceneGame::Enter()
 
 void SceneGame::Update(float dt)
 {
-	
+	time += dt * 1;
+	menu2->SetString("Time: " + std::to_string(((int)time / 60) / 60) + "h " + std::to_string(((int)time / 60) % 60) + "m " + std::to_string((int)time % 60) + "s");
+
+	count = character->GetJumpCount();
+	menu3->SetString("Jump: " + std::to_string(count));
+
+
 	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
 	{
-		isEsc = !isEsc; // ESC 누를 때마다 토글
-		FRAMEWORK.SetTimeScale(1.f);
+		isEsc = !isEsc; 
+		if (isEsc)
+		{
+			FRAMEWORK.SetTimeScale(0.f);
+		}
+		else
+		{
+			FRAMEWORK.SetTimeScale(1.f); 
+		}
+			
 		frame1->SetActive(isEsc);
 		frame2->SetActive(isEsc);
 
@@ -233,8 +248,11 @@ void SceneGame::Update(float dt)
 		}
 		if ((InputMgr::GetKeyDown(sf::Keyboard::Space)))
 		{
+			
 			if (isPressTitle)
 			{
+				isEsc = false;
+				isPressTitle = false;
 				FRAMEWORK.SetTimeScale(1.f);
 				SCENE_MGR.ChangeScene(SceneIds::Title);
 			}
@@ -254,7 +272,7 @@ void SceneGame::Update(float dt)
 		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 2160.f);
 	}
 
-	if ((character->GetPosition().y < 1080) && character->GetPosition().y < 2160) // 맞는 조건
+	if ((character->GetPosition().y < 1080) && character->GetPosition().y < 2160)
 	{
 		worldView.setCenter(windowSize * 0.5f);
 	}

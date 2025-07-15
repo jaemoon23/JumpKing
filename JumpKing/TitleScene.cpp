@@ -20,7 +20,8 @@ void TitleScene::Enter()
 
 	uiView.setSize(windowSize);
 	uiView.setCenter(windowSize * 0.5f);
-
+	
+	
 	title_logo = (SpriteGo*)AddGameObject(new SpriteGo("graphics/title_logo.png"));
 	cursor = (SpriteGo*)AddGameObject(new SpriteGo("graphics/gui/cursor.png"));
 	frame = (SpriteGo*)AddGameObject(new SpriteGo("graphics/gui/frame.png"));
@@ -89,6 +90,9 @@ void TitleScene::Init()
 	texIds.push_back("graphics/gui/cursor.png");
 	fontIds.push_back("fonts/ttf_double_homicide.ttf");
 	fontIds.push_back("fonts/ttf_entercommand_bold.ttf");
+	soundIds.push_back("Audio/menu_intro.wav");
+	
+	
 	Scene::Init();
 }
 
@@ -145,7 +149,16 @@ void TitleScene::Update(float dt)
 		{
 			if (isPressTitle)
 			{
+				frame->SetActive(false);
+				cursor->SetActive(false);
+				start->SetActive(false);
+				exit->SetActive(false);
+				startScene = true;
+				menuScene = false;
+				isPressTitle = false;
+				
 				SCENE_MGR.ChangeScene(SceneIds::Game);
+				
 			}
 			if (isPressExit)
 			{

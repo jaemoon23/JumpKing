@@ -37,7 +37,6 @@ protected:
     bool isActiveRightArm = true;
     bool isActiveHead = true;
 
-  
     float scaleX;
     float scaleY;
 
@@ -60,6 +59,7 @@ protected:
     float timer = 0.f;
     float gravity = 0.f;
 
+    int jumpCount = 0;
 public:
     Player(const std::string name = "");
     ~Player() override = default;
@@ -83,6 +83,7 @@ public:
     void CheckCollision_RightArm();
     void CheckCollision_LeftArm();
     void CheckCollision_Head();
+    int GetJumpCount() { return jumpCount; }
 
 };
 
