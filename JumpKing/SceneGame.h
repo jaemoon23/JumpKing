@@ -2,15 +2,21 @@
 #include "Scene.h"
 #include "SpriteGo.h"
 #include "TextGo.h"
+#include "Animator.h"
 
 class Player;
-
+class Princess;
+class VictoryKing;
 class SceneGame : public Scene
 {
 protected:
 	SpriteGo* back1;
 	SpriteGo* back1_Fg;
 	SpriteGo* back1_Hit_Mask;
+	SpriteGo* back2;
+	SpriteGo* back2_Fg;
+	SpriteGo* back3;
+	SpriteGo* back3_Fg;
 
 	SpriteGo* frame1;
 	SpriteGo* frame2;
@@ -23,18 +29,20 @@ protected:
 	TextGo* menu4;
 	TextGo* menu5;
 	TextGo* menu6;
+	TextGo* victory;
 
-	SpriteGo* back2;
-	SpriteGo* back2_Fg;
-
-	SpriteGo* back3;
-	SpriteGo* back3_Fg;
-	
 	Player* character;
+	Princess* princess;
+	VictoryKing* king;
 
-	sf::Vector2f windowSize;
 	sf::FloatRect bounds;
 
+	sf::Vector2f windowSize;
+	
+
+	Animator animator;
+
+	bool isVictory = false;
 	bool isPressTitle = true;
 	bool isPressExit = false;
 	bool isEsc = false;
@@ -54,6 +62,8 @@ public:
 	void Enter() override;
 	void Update(float dt) override;
 	void Draw(sf::RenderWindow& window) override;
+
+	bool GetIsVictory() const { return isVictory; }
 	
 };
 

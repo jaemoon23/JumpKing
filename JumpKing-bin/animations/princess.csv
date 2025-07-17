@@ -1,0 +1,6 @@
+ID,FPS,"LoopType (0: Single, 1: Loop)		",,,
+run,3,"1	",,,
+"				",,,,,
+TEXTURE ID,LEFT,TOP,WIDTH,HEIGHT,"FLIPX (0:Fale, 1:True)"
+graphics/Princess_Sprite.png,0,0,38,32,0
+graphics/Princess_Sprite.png,38,0,38,32,0

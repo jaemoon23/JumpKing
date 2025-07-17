@@ -2,6 +2,8 @@
 #include "SceneGame.h"
 #include "SpriteGo.h"
 #include "Player.h"
+#include "Princess.h"
+#include "VictoryKing.h"
 
 SceneGame::SceneGame() : Scene(SceneIds::Game)
 {
@@ -12,6 +14,8 @@ void SceneGame::Init()
 	fontIds.push_back("fonts/DS-ttf_litter_lover2.ttf");
 
 	texIds.push_back("graphics/Character_Sprite.png");
+	texIds.push_back("graphics/Princess_Sprite.png");
+	texIds.push_back("graphics/King_Princess_Sprite.png");
 
 	texIds.push_back("graphics/stage1/back_Hit_Mask.png");
 	texIds.push_back("graphics/stage1/back1.png");
@@ -37,8 +41,6 @@ void SceneGame::Init()
 	SOUNDBUFFER_MGR.Load("Audio/king_splat.wav");
 	SOUNDBUFFER_MGR.Load("Audio/king_land.wav");
 	
-
-
 	ANI_CLIP_MGR.Load("animations/Idle.csv");
 	ANI_CLIP_MGR.Load("animations/run.csv");
 	ANI_CLIP_MGR.Load("animations/jump.csv");
@@ -46,6 +48,8 @@ void SceneGame::Init()
 	ANI_CLIP_MGR.Load("animations/jump_move.csv");
 	ANI_CLIP_MGR.Load("animations/fall.csv");
 	ANI_CLIP_MGR.Load("animations/fall_high.csv");
+	ANI_CLIP_MGR.Load("animations/princess.csv");
+	ANI_CLIP_MGR.Load("animations/KIng_princess.csv");
 
 	
 	back1_Hit_Mask = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/back_Hit_Mask.png"));
@@ -58,8 +62,11 @@ void SceneGame::Init()
 	back3 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage3/back3.png"));
 	back3_Fg = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage3/fg3.png"));
 
-	character = (Player*)AddGameObject(new Player("graphics/Character_Sprite.png"));
+	
 
+	character = (Player*)AddGameObject(new Player("graphics/Character_Sprite.png"));
+	princess = (Princess*)AddGameObject(new Princess("graphics/Character_Sprite.png"));
+	king = (VictoryKing*)AddGameObject(new VictoryKing("graphics/King_Princess_Sprite.png"));
 
 #pragma region UI
 	texIds.push_back("graphics/gui/frame.png");
@@ -68,7 +75,6 @@ void SceneGame::Init()
 
 	frame1 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/gui/frame.png"));
 	frame2 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/gui/frame.png"));
-	frame3 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/gui/frame.png"));
 	cursor = (SpriteGo*)AddGameObject(new SpriteGo("graphics/gui/cursor.png"));
 
 	menu1 = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
@@ -77,6 +83,8 @@ void SceneGame::Init()
 	menu4 = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 	menu5 = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 	menu6 = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
+
+	victory = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 #pragma endregion
 	Scene::Init();
 	
@@ -204,6 +212,15 @@ void SceneGame::Enter()
 	menu6->sortingLayer = SortingLayers::UI;
 	menu6->sortingOrder = 0;
 	menu6->SetActive(false);
+
+	victory->SetString("\t\t\tThank you for finding me\n and making it all the way to the summit!");
+	victory->SetCharacterSize(80);
+	victory->SetFillColor(sf::Color::White);
+	victory->SetOrigin(Origins::MC);
+	victory->SetPosition({ 1920.f * 0.5f, 1080.f * 0.5f });
+	victory->sortingLayer = SortingLayers::UI;
+	victory->sortingOrder = 0;
+	victory->SetActive(false);
 #pragma endregion
 	
 }
@@ -298,6 +315,21 @@ void SceneGame::Update(float dt)
 		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
 	}
 	
+	if (Utils::CheckCollision(character->GetShape(), princess->GetShape()) && !isVictory)
+	{
+		victory->SetActive(true);
+		character->SetActive(false);
+		princess->SetActive(false);
+		king->SetActive(true);
+		isVictory = true;
+		std::cout << "°øÁÖ" << std::endl;
+	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::Space) && isVictory)
+	{
+		victory->SetActive(false);
+		king->SetisVic(true);
+		isVictory = false;
+	}
 	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left))
 	{
 		sf::Vector2i mouse = InputMgr::GetMousePosition();

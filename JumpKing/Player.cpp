@@ -40,7 +40,6 @@ void Player::SetOrigin(Origins preset)
 
 void Player::Init()
 {
-	
 	maskImage.loadFromFile("graphics/stage1/back_Hit_Mask.png");
 	animator.SetTarget(&character);
 }
@@ -61,7 +60,6 @@ void Player::Reset()
 	SetRotation(0);
 
 	// 히트박스
-	
 	// 전체
 	shape.setFillColor(sf::Color::Transparent);
 	shape.setOutlineColor(sf::Color::Green);
@@ -98,7 +96,6 @@ void Player::Reset()
 	rectAirLeg.setOutlineColor(sf::Color::Green);
 	rectAirLeg.setOutlineThickness(1.f);
 	rectAirLeg.setSize({ 80.f, 10.f });
-
 	
 	windowBound = FRAMEWORK.GetWindowBounds();
 }
@@ -115,10 +112,16 @@ void Player::Update(float dt)
 	direction.x = InputMgr::GetAxis(Axis::Horizontal);
 	if (!isJumpChargeActive)
 	{
+		if (!move)
+		{
+			Velocity.y = -100.f;
+			Velocity.x = 100.f;
+			move = true;
+		}
+		
 		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 		{
 			isHighFall = true;
-			
 			SetScale({ -4.f, GetScale().y });
 			animator.Play("animations/run.csv");
 		}
@@ -132,6 +135,7 @@ void Player::Update(float dt)
 		{
 			animator.Play("animations/Idle.csv");
 		}
+		
 		pos = GetPosition();
 		pos.x += direction.x * 300.f * dt;
 		SetPosition(pos);
@@ -189,15 +193,18 @@ void Player::Update(float dt)
 	// 착지
 	if (CheckCollision_Leg())
 	{
-		
-		playerHit = false;
-		isJumpChargeActive = false;
-		isJumping = false;
+		std::cout << "착지" << std::endl;
+		std::cout << GetPosition().x << ", " << GetPosition().y << std::endl;
 		timer = 0.f;
 		animator.Play("animations/Idle.csv");
 		SetPosition({ playerPos.x, playerPos.y - 10.f});
 		left = true;
 		right = true;
+		head = true;
+		move = false;
+		playerHit = false;
+		isJumpChargeActive = false;
+		isJumping = false;
 		std::cout << Velocity.y << std::endl;
 		if (Velocity.y >= 1000.f)
 		{
@@ -209,36 +216,51 @@ void Player::Update(float dt)
 		{
 			SOUND_MGR.PlaySfx("Audio/king_land.wav");
 		}
-		/*Velocity.y = 0.f;*/
+		Velocity.y = 0.f;
 	}
-	
 	//충돌검사 로직
 	if (CheckCollision_RightArm() || CheckCollision_LeftArm() || CheckCollision_Head())
 	{
 		playerHit = true;
 		animator.Play("animations/hit.csv");
-		if (CheckCollision_LeftArm() && left)
+		if (CheckCollision_LeftArm())
 		{
-			left = false;
-			SetPosition({ playerPos.x, playerPos.y});
+			if (left)
+			{
+				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
+				left = false;
+			}
+			SetPosition({ playerPos.x + 30.f, playerPos.y });
 			Velocity.x = -Velocity.x * 0.3f;
+			
 		}
-		if (CheckCollision_RightArm() && right)
+		if (CheckCollision_RightArm())
 		{
-			right = false;
-			SetPosition({ playerPos.x, playerPos.y });
+			if (right)
+			{
+				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
+				right = false;
+			}
+			SetPosition({ playerPos.x - 30.f, playerPos.y });
 			Velocity.x = -Velocity.x * 0.3f;
+			
 		}
 		if (CheckCollision_Head())
 		{
-			SetPosition({ playerPos.x , playerPos.y - 20.f});
+			if (head)
+			{
+				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
+				head = false;
+			}
+			SetPosition({ playerPos.x , playerPos.y - 20.f });
 			Velocity.y = std::abs(Velocity.y);
 		}
 	}
-	
 	// 공중
 	if (CheckCollision_AirLeg())
 	{
+		move = true;
+		isJumping = true;
 		Velocity.y += gravity * dt;
 		pos += Velocity * dt;
 		SetPosition(pos);
@@ -247,7 +269,10 @@ void Player::Update(float dt)
 			animator.Play("animations/fall.csv");
 		}
 	}
-	
+	/*if (Utils::CheckCollision(shape, princessShape))
+	{
+		std::cout << "공주" << std::endl;
+	}*/
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -303,11 +328,11 @@ void Player::ChargeJump(ChargeType type)
 
 void Player::HitBox()
 {
-	rectLeg.setPosition(GetPosition().x -30.f, GetPosition().y -20.f);
+	rectLeg.setPosition(GetPosition().x -30.f, GetPosition().y - 20.f);
 	rectRightArm.setPosition(GetPosition().x + 30.f, GetPosition().y - 60.f);
 	rectLeftArm.setPosition(GetPosition().x - 50.f, GetPosition().y - 60.f);
 	rectHead.setPosition(GetPosition().x - 20.f , GetPosition().y - 90.f);
-	rectAirLeg.setPosition(GetPosition().x - 40.f , GetPosition().y - 10.f);
+	rectAirLeg.setPosition(GetPosition().x - 40.f , GetPosition().y);
 	shape.setPosition(GetPosition().x, GetPosition().y);
 }
 

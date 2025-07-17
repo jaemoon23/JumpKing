@@ -78,6 +78,12 @@
     <ClCompile Include="TitleScene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Princess.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="VictoryKing.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AniPlayer.h">
@@ -150,6 +156,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TitleScene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Princess.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="VictoryKing.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

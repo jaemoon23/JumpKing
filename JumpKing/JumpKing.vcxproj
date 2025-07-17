@@ -147,6 +147,7 @@
     <ClCompile Include="Framework\Variables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Princess.cpp" />
     <ClCompile Include="SceneGame.cpp" />
     <ClCompile Include="Scenes\SceneDev1.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -158,6 +159,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="VictoryKing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AniPlayer.h" />
@@ -179,6 +181,7 @@
     <ClInclude Include="Framework\Utils.h" />
     <ClInclude Include="Framework\Variables.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Princess.h" />
     <ClInclude Include="SceneGame.h" />
     <ClInclude Include="Scenes\SceneDev1.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -188,6 +191,7 @@
     </ClInclude>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="VictoryKing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

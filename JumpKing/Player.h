@@ -25,6 +25,7 @@ protected:
     sf::RectangleShape rectAirLeg;
     sf::RectangleShape rectHead;
     sf::RectangleShape shape;
+    
 
     // 충돌체크 
     sf::Image maskImage;
@@ -42,6 +43,9 @@ protected:
 
     bool left = true;
     bool right = true;
+    bool head = true;
+    bool move = true;
+    bool Air = true;
 
     // 그리기
     std::string texId = "graphics/Character_Sprite.png";
@@ -87,6 +91,7 @@ public:
     bool CheckCollision_RightArm();
     bool CheckCollision_LeftArm();
     bool CheckCollision_Head();
+    sf::RectangleShape GetShape() const { return shape; }
     int GetJumpCount() { return jumpCount; }
 
 };
