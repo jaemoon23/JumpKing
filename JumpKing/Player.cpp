@@ -176,15 +176,37 @@ void Player::Update(float dt)
 		SetPosition(pos);
 	}
 
-	HitBox();
-	CheckCollision_AirLeg(dt);
-	CheckCollision_Leg();
-	CheckCollision_RightArm();
-	CheckCollision_LeftArm();
-	CheckCollision_Head();
-	
-	
 	// 히트박스
+	HitBox();
+
+	//충돌검사 로직
+	//다리
+	if (CheckCollision_Leg())
+	{
+		if (Velocity.y >= 1000.f)
+		{
+			isHighFall = false;
+			animator.Play("animations/fall_high.csv");
+			SOUND_MGR.PlaySfx("Audio/king_splat.wav");
+		}
+		else
+		{
+			SOUND_MGR.PlaySfx("Audio/king_land.wav");
+		}
+		SetPosition();
+		Velocity.y = 0.f;
+	}
+
+	// 팔, 머리
+	if (CheckCollision_RightArm() || CheckCollision_LeftArm() || CheckCollision_Head())
+	{
+
+	}
+	// 공중
+	if (CheckCollision_AirLeg())
+	{
+
+	}
 	
 }
 
@@ -301,7 +323,7 @@ bool Player::CheckCollision_Leg()
 	}*/
 }
 // 공중
-bool Player::CheckCollision_AirLeg(float dt)
+bool Player::CheckCollision_AirLeg()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
@@ -332,7 +354,6 @@ bool Player::CheckCollision_AirLeg(float dt)
 	}
 	return isCollision_AirLeg;
 }
-
 // 오른쪽
 bool Player::CheckCollision_RightArm()
 {
@@ -365,7 +386,6 @@ bool Player::CheckCollision_RightArm()
 	}
 	return isCollision_RightArm;
 }
-
 // 왼쪽
 bool Player::CheckCollision_LeftArm()
 {
@@ -398,7 +418,6 @@ bool Player::CheckCollision_LeftArm()
 	}
 	return isCollision_leftArm;
 }
-
 // 머리
 bool Player::CheckCollision_Head()
 {

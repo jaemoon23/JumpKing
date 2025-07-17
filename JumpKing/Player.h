@@ -57,7 +57,6 @@ protected:
     bool isJumpChargeActive = false;
     bool isJumping = false;
  
-    float fallStartPos = 0.f;
     float timer = 0.f;
     float gravity = 0.f;
 
@@ -82,7 +81,7 @@ public:
 
     void HitBox();
     bool CheckCollision_Leg();
-    bool CheckCollision_AirLeg(float dt);
+    bool CheckCollision_AirLeg();
     bool CheckCollision_RightArm();
     bool CheckCollision_LeftArm();
     bool CheckCollision_Head();
