@@ -12,6 +12,7 @@ protected:
 	TextGo* start_Space = nullptr;
 	TextGo* start = nullptr;
 	TextGo* exit = nullptr;
+	TextGo* text = nullptr;
 
 	SpriteGo* title_logo = nullptr;
 	SpriteGo* cursor = nullptr;
@@ -23,9 +24,13 @@ protected:
 
 	int count = 0;
 
+	float fadeTimer = 0.f;
+	float fadeDuration = 1.f;
+	float fadeAlpha = 0.f;
 	float shakeTimer = 0.5f;
 	float timer = 0.5f;
-
+	
+	bool fadeIn = true;
 	bool isPressTitle = false;
 	bool isPressExit = false;
 	bool startScene = true;

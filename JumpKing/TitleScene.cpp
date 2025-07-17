@@ -32,6 +32,7 @@ void TitleScene::Enter()
 	start_Space = (TextGo*)AddGameObject(new TextGo("fonts/ttf_double_homicide.ttf"));
 	start = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 	exit = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
+	text = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 	
 	
 	bounds = FRAMEWORK.GetWindowBounds();
@@ -74,12 +75,22 @@ void TitleScene::Enter()
 	exit->sortingLayer = SortingLayers::UI;
 	exit->sortingOrder = 0;
 
+	text->SetString("According to legend, there¡¯s an pretty princess waiting at the summit");
+	text->SetCharacterSize(80);
+	text->SetFillColor(sf::Color::White);
+	text->SetOrigin(Origins::MC);
+	text->SetPosition({ bounds.width * 0.5f, bounds.height * 0.5f });
+	text->SetActive(false);
+	text->sortingLayer = SortingLayers::UI;
+	text->sortingOrder = 0;
+
 	cursor->SetPosition({ start->GetPosition().x - 150.f , start->GetPosition().y + 50.f });
 	cursor->SetOrigin(Origins::MC);
 	cursor->SetActive(false);
 	cursor->SetScale({ 4.f,3.f });
 	cursor->sortingLayer = SortingLayers::UI;
 	cursor->sortingOrder = 1;
+	
 	
 	
 	
@@ -131,10 +142,11 @@ void TitleScene::Update(float dt)
 			exit->SetActive(true);
 			menuScene = true;
 		}
+		
 	}
-	
-	if (menuScene)
+	else if (menuScene)
 	{
+		isPressTitle = true;
 		if (InputMgr::GetKeyDown(sf::Keyboard::Up))
 		{
 			start->SetPosition({ frame->GetPosition().x + 20.f, frame->GetPosition().y - 100.f });
@@ -153,7 +165,7 @@ void TitleScene::Update(float dt)
 			isPressTitle = false;
 			isPressExit = true;
 		}
-		if ((InputMgr::GetKeyDown(sf::Keyboard::Space)))
+		if (InputMgr::GetKeyDown(sf::Keyboard::Space))
 		{
 			if (isPressTitle)
 			{
@@ -163,9 +175,27 @@ void TitleScene::Update(float dt)
 				exit->SetActive(false);
 				startScene = true;
 				menuScene = false;
-				isPressTitle = false;
 				SOUND_MGR.PlayBgm("Audio/menu_open.wav");
+				text->SetActive(true);
+				isPressTitle = false;
 				SCENE_MGR.ChangeScene(SceneIds::Game);
+				if (fadeIn)
+				{
+					fadeTimer += dt;
+					float progress = fadeTimer / fadeDuration;
+					if (progress >= 1.f)
+					{
+						progress = 1.0f;
+					}
+					fadeAlpha = 255.0f * (1.0f - progress);
+					text->SetFillColor(sf::Color(255, 255, 255, fadeAlpha));
+					
+				}
+				if (!fadeIn)
+				{
+					
+				}
+				
 			}
 			if (isPressExit)
 			{
@@ -173,6 +203,7 @@ void TitleScene::Update(float dt)
 			}
 		}
 	}
+	
 	
 	Scene::Update(dt);
 }

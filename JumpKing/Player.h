@@ -22,25 +22,30 @@ protected:
     sf::RectangleShape rectLeftArm;
     sf::RectangleShape rectRightArm;
     sf::RectangleShape rectLeg;
+    sf::RectangleShape rectAirLeg;
     sf::RectangleShape rectHead;
 
     // 충돌체크 
     sf::Image maskImage;
     sf::Image maskImage2;
     sf::Vector2u maskSize;
-    sf::Vector2f rectLeftPos;
+
+    sf::Vector2f rectLegPos;
+    sf::Vector2f rectAirLegPos;
     sf::Vector2f rightArmPos;
     sf::Vector2f leftArmPos;
     sf::Vector2f headPos;
 
     sf::Vector2f playerPos = { 0.f,0.f };
 
+    float legTimer = 0.f;
+
     bool isActiveLeg = true;
     bool isActiveLeftArm = true;
     bool isActiveRightArm = true;
     bool isActiveHead = true;
 
-    bool onGround = false;
+    bool onGround = true;
     bool wasOnGround = false;
    
 
@@ -87,6 +92,7 @@ public:
 
     void HitBox();
     void CheckCollision_Leg(float dt);
+    void CheckCollision_AirLeg(float dt);
     void CheckCollision_RightArm();
     void CheckCollision_LeftArm();
     void CheckCollision_Head();
