@@ -61,6 +61,14 @@ void Player::Reset()
 	SetRotation(0);
 
 	// 히트박스
+	
+	// 전체
+	shape.setFillColor(sf::Color::Transparent);
+	shape.setOutlineColor(sf::Color::Green);
+	shape.setOutlineThickness(1.f);
+	shape.setSize({ character.getLocalBounds().width * 3,character.getLocalBounds().height * 3 });
+	shape.setOrigin({ shape.getSize().x * 0.5f,shape.getSize().y });
+	
 	// 머리
 	rectHead.setFillColor(sf::Color::Transparent);
 	rectHead.setOutlineColor(sf::Color::Green);
@@ -83,13 +91,13 @@ void Player::Reset()
 	rectLeg.setFillColor(sf::Color::Transparent);
 	rectLeg.setOutlineColor(sf::Color::Green);
 	rectLeg.setOutlineThickness(1.f);
-	rectLeg.setSize({ 40.f, 10.f });
+	rectLeg.setSize({ 60.f, 10.f });
 
 	// 공중
 	rectAirLeg.setFillColor(sf::Color::Transparent);
 	rectAirLeg.setOutlineColor(sf::Color::Green);
 	rectAirLeg.setOutlineThickness(1.f);
-	rectAirLeg.setSize({ 90.f, 10.f });
+	rectAirLeg.setSize({ 80.f, 10.f });
 
 	
 	windowBound = FRAMEWORK.GetWindowBounds();
@@ -99,9 +107,9 @@ void Player::Update(float dt)
 {
 	animator.Update(dt);
 	
-	// 픽셀단위 충돌체크
 	
-	playerPos = position;
+	// 전 프레임 포지션 저장
+	playerPos = shape.getPosition();
 	
 	// 이동로직
 	direction.x = InputMgr::GetAxis(Axis::Horizontal);
@@ -114,7 +122,7 @@ void Player::Update(float dt)
 			SetScale({ -4.f, GetScale().y });
 			animator.Play("animations/run.csv");
 		}
-		if (InputMgr::GetKeyDown(sf::Keyboard::Right))
+		else if (InputMgr::GetKeyDown(sf::Keyboard::Right))
 		{
 			isHighFall = true;
 			SetScale({ 4.f, GetScale().y });
@@ -178,11 +186,19 @@ void Player::Update(float dt)
 
 	// 히트박스
 	HitBox();
-
-	//충돌검사 로직
-	//다리
+	// 착지
 	if (CheckCollision_Leg())
 	{
+		
+		playerHit = false;
+		isJumpChargeActive = false;
+		isJumping = false;
+		timer = 0.f;
+		animator.Play("animations/Idle.csv");
+		SetPosition({ playerPos.x, playerPos.y - 10.f});
+		left = true;
+		right = true;
+		std::cout << Velocity.y << std::endl;
 		if (Velocity.y >= 1000.f)
 		{
 			isHighFall = false;
@@ -193,19 +209,43 @@ void Player::Update(float dt)
 		{
 			SOUND_MGR.PlaySfx("Audio/king_land.wav");
 		}
-		SetPosition();
-		Velocity.y = 0.f;
+		/*Velocity.y = 0.f;*/
 	}
-
-	// 팔, 머리
+	
+	//충돌검사 로직
 	if (CheckCollision_RightArm() || CheckCollision_LeftArm() || CheckCollision_Head())
 	{
-
+		playerHit = true;
+		animator.Play("animations/hit.csv");
+		if (CheckCollision_LeftArm() && left)
+		{
+			left = false;
+			SetPosition({ playerPos.x, playerPos.y});
+			Velocity.x = -Velocity.x * 0.3f;
+		}
+		if (CheckCollision_RightArm() && right)
+		{
+			right = false;
+			SetPosition({ playerPos.x, playerPos.y });
+			Velocity.x = -Velocity.x * 0.3f;
+		}
+		if (CheckCollision_Head())
+		{
+			SetPosition({ playerPos.x , playerPos.y - 20.f});
+			Velocity.y = std::abs(Velocity.y);
+		}
 	}
+	
 	// 공중
 	if (CheckCollision_AirLeg())
 	{
-
+		Velocity.y += gravity * dt;
+		pos += Velocity * dt;
+		SetPosition(pos);
+		if (Velocity.y > 0.f && !playerHit)
+		{
+			animator.Play("animations/fall.csv");
+		}
 	}
 	
 }
@@ -220,6 +260,7 @@ void Player::Draw(sf::RenderWindow& window)
 		window.draw(rectRightArm);
 		window.draw(rectLeg);
 		window.draw(rectAirLeg);
+		window.draw(shape);
 	}
 }
 
@@ -262,11 +303,12 @@ void Player::ChargeJump(ChargeType type)
 
 void Player::HitBox()
 {
-	rectLeg.setPosition(GetPosition().x - 20.f, GetPosition().y - 20.f);
+	rectLeg.setPosition(GetPosition().x -30.f, GetPosition().y -20.f);
 	rectRightArm.setPosition(GetPosition().x + 30.f, GetPosition().y - 60.f);
 	rectLeftArm.setPosition(GetPosition().x - 50.f, GetPosition().y - 60.f);
 	rectHead.setPosition(GetPosition().x - 20.f , GetPosition().y - 90.f);
-	rectAirLeg.setPosition(GetPosition().x - 45.f , GetPosition().y);
+	rectAirLeg.setPosition(GetPosition().x - 40.f , GetPosition().y - 10.f);
+	shape.setPosition(GetPosition().x, GetPosition().y);
 }
 
 // 다리
@@ -279,11 +321,11 @@ bool Player::CheckCollision_Leg()
 	sf::Vector2u maskCoord[6] =
 	{
 		sf::Vector2u(rectLegPos.x * scaleX, rectLegPos.y * scaleY),
-		sf::Vector2u((rectLegPos.x + 20.f) * scaleX, rectLegPos.y * scaleY),
-		sf::Vector2u((rectLegPos.x + 40.f) * scaleX, rectLegPos.y * scaleY),
+		sf::Vector2u((rectLegPos.x + 30.f) * scaleX, rectLegPos.y * scaleY),
+		sf::Vector2u((rectLegPos.x + 60.f) * scaleX, rectLegPos.y * scaleY),
 		sf::Vector2u(rectLegPos.x * scaleX, (rectLegPos.y + 10.f) * scaleY),
-		sf::Vector2u((rectLegPos.x + 20.f) * scaleX, (rectLegPos.y + 10.f) * scaleY),
-		sf::Vector2u((rectLegPos.x + 40.f) * scaleX, (rectLegPos.y + 10.f) * scaleY)
+		sf::Vector2u((rectLegPos.x + 30.f) * scaleX, (rectLegPos.y + 10.f) * scaleY),
+		sf::Vector2u((rectLegPos.x + 60.f) * scaleX, (rectLegPos.y + 10.f) * scaleY)
 	};
 
 	bool isCollision_Leg = false;
@@ -300,27 +342,7 @@ bool Player::CheckCollision_Leg()
 		}
 	}
 	return isCollision_Leg;
-	/*if (pixelColor_Leg1 == sf::Color::Black ||
-		pixelColor_Leg2 == sf::Color::Black ||
-		pixelColor_Leg3 == sf::Color::Black ||
-		pixelColor_Leg4 == sf::Color::Black ||
-		pixelColor_Leg5 == sf::Color::Black ||
-		pixelColor_Leg6 == sf::Color::Black)
-	{
-	
-		if (Velocity.y >= 1000.f)
-		{
-			isHighFall = false;
-			animator.Play("animations/fall_high.csv");
-			SOUND_MGR.PlaySfx("Audio/king_splat.wav");
-		}
-		else
-		{
-			SOUND_MGR.PlaySfx("Audio/king_land.wav");
-		}
-		Velocity.y = 0.f;
 
-	}*/
 }
 // 공중
 bool Player::CheckCollision_AirLeg()
@@ -332,23 +354,23 @@ bool Player::CheckCollision_AirLeg()
 	sf::Vector2u maskCoord[6] =
 	{
 		sf::Vector2u(rectAirLegPos.x * scaleX, rectAirLegPos.y * scaleY),
-		sf::Vector2u((rectAirLegPos.x + 20.f) * scaleX, rectAirLegPos.y * scaleY),
 		sf::Vector2u((rectAirLegPos.x + 40.f) * scaleX, rectAirLegPos.y * scaleY),
+		sf::Vector2u((rectAirLegPos.x + 80.f) * scaleX, rectAirLegPos.y * scaleY),
 		sf::Vector2u(rectAirLegPos.x * scaleX, (rectAirLegPos.y + 10.f) * scaleY),
-		sf::Vector2u((rectAirLegPos.x + 20.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY),
-		sf::Vector2u((rectAirLegPos.x + 40.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY)
+		sf::Vector2u((rectAirLegPos.x + 40.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY),
+		sf::Vector2u((rectAirLegPos.x + 80.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY)
 	};
 
-	bool isCollision_AirLeg = false;
+	bool isCollision_AirLeg = true;
 	for (int i = 0; i < 6; ++i)
 	{
 		pixelColor_AirLeg[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
 	}
 	for (auto& color : pixelColor_AirLeg)
 	{
-		if (color == sf::Color::White)
+		if (color != sf::Color::White)
 		{
-			isCollision_AirLeg = true;
+			isCollision_AirLeg = false;
 			break;
 		}
 	}
@@ -360,19 +382,17 @@ bool Player::CheckCollision_RightArm()
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
 	rightArmPos = rectRightArm.getPosition();
-	sf::Color pixelColor_RightArm[6];
-	sf::Vector2u maskCoord[6] =
+	sf::Color pixelColor_RightArm[4];
+	sf::Vector2u maskCoord[4] =
 	{
 		sf::Vector2u(rightArmPos.x * scaleX, rightArmPos.y * scaleY),
 		sf::Vector2u((rightArmPos.x + 20.f) * scaleX, rightArmPos.y * scaleY),
-		sf::Vector2u((rightArmPos.x + 40.f) * scaleX, rightArmPos.y * scaleY),
-		sf::Vector2u(rightArmPos.x * scaleX, (rightArmPos.y + 10.f) * scaleY),
-		sf::Vector2u((rightArmPos.x + 20.f) * scaleX, (rightArmPos.y + 10.f) * scaleY),
-		sf::Vector2u((rightArmPos.x + 40.f) * scaleX, (rightArmPos.y + 10.f) * scaleY)
+		sf::Vector2u(rightArmPos.x * scaleX, (rightArmPos.y + 20.f) * scaleY),
+		sf::Vector2u((rightArmPos.x + 20.f) * scaleX, (rightArmPos.y + 20.f) * scaleY),
 	};
 
 	bool isCollision_RightArm = false;
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		pixelColor_RightArm[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
 	}
@@ -380,6 +400,7 @@ bool Player::CheckCollision_RightArm()
 	{
 		if (color == sf::Color::Blue)
 		{
+			std::cout << "오른쪽 충돌" << std::endl;
 			isCollision_RightArm = true;
 			break;
 		}
@@ -391,20 +412,18 @@ bool Player::CheckCollision_LeftArm()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
-	leftArmPos = rectRightArm.getPosition();
-	sf::Color pixelColor_LeftArm[6];
-	sf::Vector2u maskCoord[6] =
+	leftArmPos = rectLeftArm.getPosition();
+	sf::Color pixelColor_LeftArm[4];
+	sf::Vector2u maskCoord[4] =
 	{
 		sf::Vector2u(leftArmPos.x * scaleX, leftArmPos.y * scaleY),
 		sf::Vector2u((leftArmPos.x + 20.f) * scaleX, leftArmPos.y * scaleY),
-		sf::Vector2u((leftArmPos.x + 40.f) * scaleX, leftArmPos.y * scaleY),
-		sf::Vector2u(leftArmPos.x * scaleX, (leftArmPos.y + 10.f) * scaleY),
-		sf::Vector2u((leftArmPos.x + 20.f) * scaleX, (leftArmPos.y + 10.f) * scaleY),
-		sf::Vector2u((leftArmPos.x + 40.f) * scaleX, (leftArmPos.y + 10.f) * scaleY)
+		sf::Vector2u(leftArmPos.x * scaleX, (leftArmPos.y + 20.f) * scaleY),
+		sf::Vector2u((leftArmPos.x + 20.f) * scaleX, (leftArmPos.y + 20.f) * scaleY),
 	};
 
 	bool isCollision_leftArm = false;
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		pixelColor_LeftArm[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
 	}
@@ -412,6 +431,7 @@ bool Player::CheckCollision_LeftArm()
 	{
 		if (color == sf::Color::Blue)
 		{
+			std::cout << "왼쪽 충돌" << std::endl;
 			isCollision_leftArm = true;
 			break;
 		}
@@ -423,16 +443,16 @@ bool Player::CheckCollision_Head()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
-	headPos = rectRightArm.getPosition();
+	headPos = rectHead.getPosition();
 	sf::Color pixelColor_Head[6];
 	sf::Vector2u maskCoord[6] =
 	{
 		sf::Vector2u(headPos.x * scaleX, headPos.y * scaleY),
-		sf::Vector2u((headPos.x + 20.f) * scaleX, headPos.y * scaleY),
-		sf::Vector2u((headPos.x + 40.f) * scaleX, headPos.y * scaleY),
+		sf::Vector2u((headPos.x + 15.f) * scaleX, headPos.y * scaleY),
+		sf::Vector2u((headPos.x + 30.f) * scaleX, headPos.y * scaleY),
 		sf::Vector2u(headPos.x * scaleX, (headPos.y + 10.f) * scaleY),
-		sf::Vector2u((headPos.x + 20.f) * scaleX, (headPos.y + 10.f) * scaleY),
-		sf::Vector2u((headPos.x + 40.f) * scaleX, (headPos.y + 10.f) * scaleY)
+		sf::Vector2u((headPos.x + 15.f) * scaleX, (headPos.y + 10.f) * scaleY),
+		sf::Vector2u((headPos.x + 30.f) * scaleX, (headPos.y + 10.f) * scaleY)
 	};
 
 	bool isCollision_Head = false;
@@ -444,6 +464,7 @@ bool Player::CheckCollision_Head()
 	{
 		if (color == sf::Color::Blue)
 		{
+			std::cout << "머리 충돌" << std::endl;
 			isCollision_Head = true;
 			break;
 		}

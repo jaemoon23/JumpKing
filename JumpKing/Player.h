@@ -24,6 +24,7 @@ protected:
     sf::RectangleShape rectLeg;
     sf::RectangleShape rectAirLeg;
     sf::RectangleShape rectHead;
+    sf::RectangleShape shape;
 
     // 충돌체크 
     sf::Image maskImage;
@@ -36,11 +37,11 @@ protected:
     sf::Vector2f headPos;
 
     sf::Vector2f playerPos = { 0.f,0.f };
-
-   
- 
     float scaleX;
     float scaleY;
+
+    bool left = true;
+    bool right = true;
 
     // 그리기
     std::string texId = "graphics/Character_Sprite.png";
@@ -51,11 +52,12 @@ protected:
     sf::Vector2f pos;
     sf::Vector2f direction = { 1.f,0.f };
     sf::Vector2f jumpDirection = { 0.f,0.f };
-    sf::Vector2f Velocity = { 0.f,0.f };
+    sf::Vector2f Velocity = { 400.f,0.f };
 
     bool isHighFall = true;
     bool isJumpChargeActive = false;
     bool isJumping = false;
+    bool playerHit = false;
  
     float timer = 0.f;
     float gravity = 0.f;
