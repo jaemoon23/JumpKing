@@ -110,18 +110,13 @@ void Player::Update(float dt)
 		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 		{
 			isHighFall = true;
-			isActiveRightArm = false;
-			isActiveLeftArm = true;
-			isActiveLeg = false;
+			
 			SetScale({ -4.f, GetScale().y });
 			animator.Play("animations/run.csv");
 		}
 		if (InputMgr::GetKeyDown(sf::Keyboard::Right))
 		{
 			isHighFall = true;
-			isActiveLeftArm = false;
-			isActiveRightArm = true;
-			isActiveLeg = false;
 			SetScale({ 4.f, GetScale().y });
 			animator.Play("animations/run.csv");
 		}
@@ -183,11 +178,7 @@ void Player::Update(float dt)
 
 	HitBox();
 	CheckCollision_AirLeg(dt);
-	
-	if (isActiveLeg)
-	{
-		CheckCollision_Leg(dt);
-	}
+	CheckCollision_Leg();
 	CheckCollision_RightArm();
 	CheckCollision_LeftArm();
 	CheckCollision_Head();
@@ -257,42 +248,44 @@ void Player::HitBox()
 }
 
 // 다리
-void Player::CheckCollision_Leg(float dt)
+bool Player::CheckCollision_Leg()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
 	rectLegPos = rectLeg.getPosition();
-	maskSize = maskImage.getSize();
+	sf::Color pixelColor_Leg[6];
+	sf::Vector2u maskCoord[6] =
+	{
+		sf::Vector2u(rectLegPos.x * scaleX, rectLegPos.y * scaleY),
+		sf::Vector2u((rectLegPos.x + 20.f) * scaleX, rectLegPos.y * scaleY),
+		sf::Vector2u((rectLegPos.x + 40.f) * scaleX, rectLegPos.y * scaleY),
+		sf::Vector2u(rectLegPos.x * scaleX, (rectLegPos.y + 10.f) * scaleY),
+		sf::Vector2u((rectLegPos.x + 20.f) * scaleX, (rectLegPos.y + 10.f) * scaleY),
+		sf::Vector2u((rectLegPos.x + 40.f) * scaleX, (rectLegPos.y + 10.f) * scaleY)
+	};
 
-	sf::Vector2u maskCoord_Leg1(rectLegPos.x * scaleX, rectLegPos.y * scaleY);
-	sf::Vector2u maskCoord_Leg2((rectLegPos.x + 20.f) * scaleX, rectLegPos.y * scaleY);
-	sf::Vector2u maskCoord_Leg3((rectLegPos.x + 40.f) * scaleX, rectLegPos.y * scaleY);
-	sf::Vector2u maskCoord_Leg4(rectLegPos.x * scaleX, (rectLegPos.y + 10.f) * scaleY);
-	sf::Vector2u maskCoord_Leg5((rectLegPos.x + 20.f) * scaleX, (rectLegPos.y + 10.f) * scaleY);
-	sf::Vector2u maskCoord_Leg6((rectLegPos.x + 40.f) * scaleX, (rectLegPos.y + 10.f) * scaleY);
-	
-	sf::Color pixelColor_Leg1 = maskImage.getPixel(maskCoord_Leg1.x, maskCoord_Leg1.y);
-	sf::Color pixelColor_Leg2 = maskImage.getPixel(maskCoord_Leg2.x, maskCoord_Leg2.y);
-	sf::Color pixelColor_Leg3 = maskImage.getPixel(maskCoord_Leg3.x, maskCoord_Leg3.y);
-
-	sf::Color pixelColor_Leg4 = maskImage.getPixel(maskCoord_Leg4.x, maskCoord_Leg4.y);
-	sf::Color pixelColor_Leg5 = maskImage.getPixel(maskCoord_Leg5.x, maskCoord_Leg5.y);
-	sf::Color pixelColor_Leg6 = maskImage.getPixel(maskCoord_Leg6.x, maskCoord_Leg6.y);
-
-	if (pixelColor_Leg1 == sf::Color::Black ||
+	bool isCollision_Leg = false;
+	for (int i = 0; i < 6; ++i)
+	{
+		pixelColor_Leg[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
+	}
+	for (auto& color : pixelColor_Leg)
+	{
+		if (color == sf::Color::Black)
+		{
+			isCollision_Leg = true;
+			break;
+		}
+	}
+	return isCollision_Leg;
+	/*if (pixelColor_Leg1 == sf::Color::Black ||
 		pixelColor_Leg2 == sf::Color::Black ||
 		pixelColor_Leg3 == sf::Color::Black ||
 		pixelColor_Leg4 == sf::Color::Black ||
 		pixelColor_Leg5 == sf::Color::Black ||
 		pixelColor_Leg6 == sf::Color::Black)
 	{
-		std::cout << Velocity.y << std::endl;
-		std::cout << "검은색" << std::endl;
-		animator.Play("animations/Idle.csv");
-		isJumping = false;
-		isJumpChargeActive = false;
-		timer = 0.f;
-		//SetPosition({ GetPosition().x, GetPosition().y - 10.f });
+	
 		if (Velocity.y >= 1000.f)
 		{
 			isHighFall = false;
@@ -305,160 +298,138 @@ void Player::CheckCollision_Leg(float dt)
 		}
 		Velocity.y = 0.f;
 
-		isActiveLeftArm = true;
-		isActiveRightArm = true;
-		isActiveHead = true;
-		isActiveLeg = false;
-		position.y = position.y - 1.f;
-	}
-	
+	}*/
 }
 // 공중
-void Player::CheckCollision_AirLeg(float dt)
+bool Player::CheckCollision_AirLeg(float dt)
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
 	rectAirLegPos = rectAirLeg.getPosition();
-	maskSize = maskImage.getSize();
-
-	sf::Vector2u maskCoord_AirLeg1(rectAirLegPos.x * scaleX, rectAirLegPos.y * scaleY);
-	sf::Vector2u maskCoord_AirLeg2((rectAirLegPos.x + 45.f) * scaleX, rectAirLegPos.y * scaleY);
-	sf::Vector2u maskCoord_AirLeg3((rectAirLegPos.x + 90.f) * scaleX, rectAirLegPos.y * scaleY);
-	sf::Vector2u maskCoord_AirLeg4(rectAirLegPos.x * scaleX, (rectAirLegPos.y + 10.f) * scaleY);
-	sf::Vector2u maskCoord_AirLeg5((rectAirLegPos.x + 45.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY);
-	sf::Vector2u maskCoord_AirLeg6((rectAirLegPos.x + 90.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY);
-
-	sf::Color pixelColor_AirLeg1 = maskImage.getPixel(maskCoord_AirLeg1.x, maskCoord_AirLeg1.y);
-	sf::Color pixelColor_AirLeg2 = maskImage.getPixel(maskCoord_AirLeg2.x, maskCoord_AirLeg2.y);
-	sf::Color pixelColor_AirLeg3 = maskImage.getPixel(maskCoord_AirLeg3.x, maskCoord_AirLeg3.y);
-
-	sf::Color pixelColor_AirLeg4 = maskImage.getPixel(maskCoord_AirLeg4.x, maskCoord_AirLeg4.y);
-	sf::Color pixelColor_AirLeg5 = maskImage.getPixel(maskCoord_AirLeg5.x, maskCoord_AirLeg5.y);
-	sf::Color pixelColor_AirLeg6 = maskImage.getPixel(maskCoord_AirLeg6.x, maskCoord_AirLeg6.y);
-
-	if (pixelColor_AirLeg1 == sf::Color::White &&
-		pixelColor_AirLeg2 == sf::Color::White &&
-		pixelColor_AirLeg3 == sf::Color::White &&
-		pixelColor_AirLeg4 == sf::Color::White &&
-		pixelColor_AirLeg5 == sf::Color::White &&
-		pixelColor_AirLeg6 == sf::Color::White)
+	sf::Color pixelColor_AirLeg[6];
+	sf::Vector2u maskCoord[6] =
 	{
-		isJumping = true;
-		
-		
-		if (Velocity.y >= 0)
-		{
-			animator.Play("animations/fall.csv");
-		}
-		isActiveLeg = true;
-		gravity = 1000.f;
-		Velocity.y += gravity * dt;
-		pos += Velocity * dt;
-		SetPosition(pos);
+		sf::Vector2u(rectAirLegPos.x * scaleX, rectAirLegPos.y * scaleY),
+		sf::Vector2u((rectAirLegPos.x + 20.f) * scaleX, rectAirLegPos.y * scaleY),
+		sf::Vector2u((rectAirLegPos.x + 40.f) * scaleX, rectAirLegPos.y * scaleY),
+		sf::Vector2u(rectAirLegPos.x * scaleX, (rectAirLegPos.y + 10.f) * scaleY),
+		sf::Vector2u((rectAirLegPos.x + 20.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY),
+		sf::Vector2u((rectAirLegPos.x + 40.f) * scaleX, (rectAirLegPos.y + 10.f) * scaleY)
+	};
+
+	bool isCollision_AirLeg = false;
+	for (int i = 0; i < 6; ++i)
+	{
+		pixelColor_AirLeg[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
 	}
+	for (auto& color : pixelColor_AirLeg)
+	{
+		if (color == sf::Color::White)
+		{
+			isCollision_AirLeg = true;
+			break;
+		}
+	}
+	return isCollision_AirLeg;
 }
 
 // 오른쪽
-void Player::CheckCollision_RightArm()
+bool Player::CheckCollision_RightArm()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
 	rightArmPos = rectRightArm.getPosition();
-	maskSize = maskImage.getSize();
-
-	sf::Vector2u maskCoord_RightArm1(rightArmPos.x * scaleX, rightArmPos.y * scaleY);			// 0, 0
-	sf::Vector2u maskCoord_RightArm2(rightArmPos.x * scaleX, (rightArmPos.y + 20.f) * scaleY);  // 0, 20
-	
-	sf::Vector2u maskCoord_RightArm3((rightArmPos.x + 20.f) * scaleX, rightArmPos.y * scaleY);	// 20, 0
-	sf::Vector2u maskCoord_RightArm4((rightArmPos.x + 20.f) * scaleX, (rightArmPos.y + 20.f) * scaleY);  // 20, 20
-	
-	sf::Color pixelColor_RightArm1 = maskImage.getPixel(maskCoord_RightArm1.x, maskCoord_RightArm1.y);
-	sf::Color pixelColor_RightArm2 = maskImage.getPixel(maskCoord_RightArm2.x, maskCoord_RightArm2.y);
-	sf::Color pixelColor_RightArm3 = maskImage.getPixel(maskCoord_RightArm3.x, maskCoord_RightArm3.y);
-	sf::Color pixelColor_RightArm4 = maskImage.getPixel(maskCoord_RightArm4.x, maskCoord_RightArm4.y);
-	
-
-	if (pixelColor_RightArm1 == sf::Color::Blue ||
-		pixelColor_RightArm2 == sf::Color::Blue ||
-		pixelColor_RightArm3 == sf::Color::Blue ||
-		pixelColor_RightArm4 == sf::Color::Blue )
+	sf::Color pixelColor_RightArm[6];
+	sf::Vector2u maskCoord[6] =
 	{
-		if (isActiveRightArm)
-		{
-			SOUND_MGR.PlaySfx("Audio/king_bump.wav");
-		}
-		std::cout << "오른쪽" << std::endl;
-		SetPosition({ GetPosition().x - 20.f, playerPos.y });
-		Velocity.x = -Velocity.x;
-		isActiveLeftArm = true;
-		isActiveRightArm = false;
-		
-		
+		sf::Vector2u(rightArmPos.x * scaleX, rightArmPos.y * scaleY),
+		sf::Vector2u((rightArmPos.x + 20.f) * scaleX, rightArmPos.y * scaleY),
+		sf::Vector2u((rightArmPos.x + 40.f) * scaleX, rightArmPos.y * scaleY),
+		sf::Vector2u(rightArmPos.x * scaleX, (rightArmPos.y + 10.f) * scaleY),
+		sf::Vector2u((rightArmPos.x + 20.f) * scaleX, (rightArmPos.y + 10.f) * scaleY),
+		sf::Vector2u((rightArmPos.x + 40.f) * scaleX, (rightArmPos.y + 10.f) * scaleY)
+	};
+
+	bool isCollision_RightArm = false;
+	for (int i = 0; i < 6; ++i)
+	{
+		pixelColor_RightArm[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
 	}
+	for (auto& color : pixelColor_RightArm)
+	{
+		if (color == sf::Color::Blue)
+		{
+			isCollision_RightArm = true;
+			break;
+		}
+	}
+	return isCollision_RightArm;
 }
 
 // 왼쪽
-void Player::CheckCollision_LeftArm()
+bool Player::CheckCollision_LeftArm()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
-	leftArmPos = rectLeftArm.getPosition();
-	maskSize = maskImage.getSize();
-
-	sf::Vector2u maskCoord_LeftArm1(leftArmPos.x * scaleX, leftArmPos.y * scaleY);					// 0, 0
-	sf::Vector2u maskCoord_LeftArm2(leftArmPos.x * scaleX, (leftArmPos.y + 20.f) * scaleY);			// 0, 20
-	sf::Vector2u maskCoord_LeftArm3((leftArmPos.x + 20.f) * scaleX, leftArmPos.y * scaleY);			// 20, 0
-	sf::Vector2u maskCoord_LeftArm4((leftArmPos.x + 20.f) * scaleX, (leftArmPos.y + 20.f) * scaleY);  // 20, 20
-	
-
-	sf::Color pixelColor_LeftArm1 = maskImage.getPixel(maskCoord_LeftArm1.x, maskCoord_LeftArm1.y);
-	sf::Color pixelColor_LeftArm2 = maskImage.getPixel(maskCoord_LeftArm2.x, maskCoord_LeftArm2.y);
-	
-	sf::Color pixelColor_LeftArm3 = maskImage.getPixel(maskCoord_LeftArm3.x, maskCoord_LeftArm3.y);
-	sf::Color pixelColor_LeftArm4 = maskImage.getPixel(maskCoord_LeftArm4.x, maskCoord_LeftArm4.y);
-	
-	
-
-	if (pixelColor_LeftArm1 == sf::Color::Blue ||
-		pixelColor_LeftArm2 == sf::Color::Blue ||
-		pixelColor_LeftArm3 == sf::Color::Blue ||
-		pixelColor_LeftArm4 == sf::Color::Blue )
+	leftArmPos = rectRightArm.getPosition();
+	sf::Color pixelColor_LeftArm[6];
+	sf::Vector2u maskCoord[6] =
 	{
-		if (isActiveLeftArm)
-		{
-			SOUND_MGR.PlaySfx("Audio/king_bump.wav");
-		}
-		
-		std::cout << "왼팔 ";
-		SetPosition({ GetPosition().x + 20.f, playerPos.y});
-		Velocity.x = -Velocity.x;
-		isActiveRightArm = true;
-		isActiveLeftArm = false;
+		sf::Vector2u(leftArmPos.x * scaleX, leftArmPos.y * scaleY),
+		sf::Vector2u((leftArmPos.x + 20.f) * scaleX, leftArmPos.y * scaleY),
+		sf::Vector2u((leftArmPos.x + 40.f) * scaleX, leftArmPos.y * scaleY),
+		sf::Vector2u(leftArmPos.x * scaleX, (leftArmPos.y + 10.f) * scaleY),
+		sf::Vector2u((leftArmPos.x + 20.f) * scaleX, (leftArmPos.y + 10.f) * scaleY),
+		sf::Vector2u((leftArmPos.x + 40.f) * scaleX, (leftArmPos.y + 10.f) * scaleY)
+	};
+
+	bool isCollision_leftArm = false;
+	for (int i = 0; i < 6; ++i)
+	{
+		pixelColor_LeftArm[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
 	}
+	for (auto& color : pixelColor_LeftArm)
+	{
+		if (color == sf::Color::Blue)
+		{
+			isCollision_leftArm = true;
+			break;
+		}
+	}
+	return isCollision_leftArm;
 }
 
 // 머리
-void Player::CheckCollision_Head()
+bool Player::CheckCollision_Head()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
 	scaleY = 1.f / std::abs(character.getScale().y);
-	headPos = rectHead.getPosition();
-	maskSize = maskImage.getSize();
-
-	sf::Vector2u maskCoord_Head(headPos.x * scaleX, headPos.y * scaleY);
-
-	sf::Color pixelColor_Head = maskImage.getPixel(maskCoord_Head.x, maskCoord_Head.y);
-
-	if (pixelColor_Head == sf::Color::Blue)
+	headPos = rectRightArm.getPosition();
+	sf::Color pixelColor_Head[6];
+	sf::Vector2u maskCoord[6] =
 	{
-		SOUND_MGR.PlaySfx("Audio/king_bump.wav");
-		std::cout << "위쪽 벽 충돌" << std::endl;
-   		SetPosition({ GetPosition().x, character.getPosition().y + 20.f});
-		animator.Play("animations/hit.csv");
-		Velocity.y = std::abs(Velocity.y);
-		isActiveHead = false;
+		sf::Vector2u(headPos.x * scaleX, headPos.y * scaleY),
+		sf::Vector2u((headPos.x + 20.f) * scaleX, headPos.y * scaleY),
+		sf::Vector2u((headPos.x + 40.f) * scaleX, headPos.y * scaleY),
+		sf::Vector2u(headPos.x * scaleX, (headPos.y + 10.f) * scaleY),
+		sf::Vector2u((headPos.x + 20.f) * scaleX, (headPos.y + 10.f) * scaleY),
+		sf::Vector2u((headPos.x + 40.f) * scaleX, (headPos.y + 10.f) * scaleY)
+	};
+
+	bool isCollision_Head = false;
+	for (int i = 0; i < 6; ++i)
+	{
+		pixelColor_Head[i] = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
 	}
-	
+	for (auto& color : pixelColor_Head)
+	{
+		if (color == sf::Color::Blue)
+		{
+			isCollision_Head = true;
+			break;
+		}
+	}
+	return isCollision_Head;
 }
 
 

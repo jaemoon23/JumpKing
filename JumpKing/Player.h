@@ -27,7 +27,6 @@ protected:
 
     // 충돌체크 
     sf::Image maskImage;
-    sf::Image maskImage2;
     sf::Vector2u maskSize;
 
     sf::Vector2f rectLegPos;
@@ -38,17 +37,8 @@ protected:
 
     sf::Vector2f playerPos = { 0.f,0.f };
 
-    float legTimer = 0.f;
-
-    bool isActiveLeg = true;
-    bool isActiveLeftArm = true;
-    bool isActiveRightArm = true;
-    bool isActiveHead = true;
-
-    bool onGround = true;
-    bool wasOnGround = false;
    
-
+ 
     float scaleX;
     float scaleY;
 
@@ -91,11 +81,11 @@ public:
     void ChargeJump(ChargeType type);
 
     void HitBox();
-    void CheckCollision_Leg(float dt);
-    void CheckCollision_AirLeg(float dt);
-    void CheckCollision_RightArm();
-    void CheckCollision_LeftArm();
-    void CheckCollision_Head();
+    bool CheckCollision_Leg();
+    bool CheckCollision_AirLeg(float dt);
+    bool CheckCollision_RightArm();
+    bool CheckCollision_LeftArm();
+    bool CheckCollision_Head();
     int GetJumpCount() { return jumpCount; }
 
 };
