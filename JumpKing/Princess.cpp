@@ -49,7 +49,6 @@ void Princess::Release()
 
 void Princess::Reset()
 {
-	princess.setTexture(TEXTURE_MGR.Get(texId));
 	sortingLayer = SortingLayers::Foreground;
 	sortingOrder = 3;
 	animator.Play("animations/princess.csv");

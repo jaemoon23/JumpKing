@@ -52,7 +52,6 @@ void SceneGame::Init()
 	ANI_CLIP_MGR.Load("animations/princess.csv");
 	ANI_CLIP_MGR.Load("animations/KIng_princess.csv");
 
-	
 	back1_Hit_Mask = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/back_Hit_Mask.png"));
 	back1 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/back1.png"));
 	back1_Fg = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage1/fg1.png"));
@@ -64,8 +63,10 @@ void SceneGame::Init()
 	back3_Fg = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage3/fg3.png"));
 
 	character = (Player*)AddGameObject(new Player("graphics/Character_Sprite.png"));
-	princess = (Princess*)AddGameObject(new Princess("graphics/Character_Sprite.png"));
 	king = (VictoryKing*)AddGameObject(new VictoryKing("graphics/King_Princess_Sprite.png"));
+	princess = (Princess*)AddGameObject(new Princess("graphics/Character_Sprite.png"));
+	
+
 #pragma region UI
 	texIds.push_back("graphics/gui/frame.png");
 	texIds.push_back("graphics/gui/cursor.png");
@@ -84,13 +85,14 @@ void SceneGame::Init()
 
 	victory = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 #pragma endregion
+	
 	Scene::Init();
 	
 }
 
+
 void SceneGame::Enter()
 {
-
 	SOUND_MGR.PlayBgm("Audio/Nature bg.wav");
 	bounds = FRAMEWORK.GetWindowBounds();
 	windowSize = FRAMEWORK.GetWindowSizeF();
@@ -99,7 +101,6 @@ void SceneGame::Enter()
 
 	uiView.setSize(windowSize);
 	uiView.setCenter(windowSize * 0.5f);
-	
 	Scene::Enter();
 #pragma region BackGround
 	back1_Hit_Mask->SetScale({ 4.f,3.f });
@@ -284,7 +285,7 @@ void SceneGame::Update(float dt)
 			if (isPressTitle)
 			{
 				isEsc = false;
-				isPressTitle = false;
+				isPressTitle = true;
 				FRAMEWORK.SetTimeScale(1.f);
 				SCENE_MGR.ChangeScene(SceneIds::Title);
 			}
@@ -295,28 +296,32 @@ void SceneGame::Update(float dt)
 		}
 	}
 	
-	if (character->GetPosition().y < 2160)
+	if (!isVictory)
 	{
-		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
-	}
-	else if (character->GetPosition().y > 2160)
-	{
-		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 2160.f);
-	}
+		if (character->GetPosition().y < 2160)
+		{
+			worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
+		}
+		else if (character->GetPosition().y > 2160)
+		{
+			worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 2160.f);
+		}
 
-	if ((character->GetPosition().y < 1080) && character->GetPosition().y < 2160)
-	{
-		worldView.setCenter(windowSize * 0.5f);
-	}
-	else if (character->GetPosition().y > 1080 && character->GetPosition().y < 2160)
-	{
-		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
+		if ((character->GetPosition().y < 1080) && character->GetPosition().y < 2160)
+		{
+			worldView.setCenter(windowSize * 0.5f);
+		}
+		else if (character->GetPosition().y > 1080 && character->GetPosition().y < 2160)
+		{
+			worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
+		}
 	}
 	
 	if (Utils::CheckCollision(character->GetShape(), princess->GetShape()) && !isVictory)
 	{
 		victory->SetActive(true);
 		character->SetActive(false);
+		
 		princess->SetActive(false);
 		king->SetActive(true);
 		isVictory = true;
@@ -324,10 +329,21 @@ void SceneGame::Update(float dt)
 	}
 	if (InputMgr::GetKeyDown(sf::Keyboard::Space) && isVictory)
 	{
-		victory->SetActive(false);
 		king->SetisVic(true);
-		isVictory = false;
 	}
+	if (king->GetPosition().y <= 0.f)
+	{
+		isVictory = false;
+		king->SetisVic(false);
+		victory->SetActive(false);
+		character->SetActive(true);
+		princess->SetActive(true);
+		king->SetActive(false);
+		character->SetPosition({ 600.f,3150.f });
+		king->SetPosition({ 920.f,680.f });
+		SCENE_MGR.ChangeScene(SceneIds::Title);
+	}
+		
 	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left))
 	{
 		sf::Vector2i mouse = InputMgr::GetMousePosition();

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "TitleScene.h"
-
+#include "SceneGame.h"
 TitleScene::TitleScene()
 	: Scene(SceneIds::Title)
 {

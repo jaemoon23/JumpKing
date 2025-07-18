@@ -3,6 +3,7 @@
 #include "TextGo.h"
 #include "SpriteGo.h"
 #include "SoundMgr.h"
+#include "SceneGame.h"
 
 class TitleScene :
     public Scene
@@ -18,7 +19,7 @@ protected:
 	SpriteGo* title_logo = nullptr;
 	SpriteGo* cursor = nullptr;
 	SpriteGo* frame = nullptr;
-
+	SceneGame game;
 	sf::Vector2f windowSize;
 
 	int count = 0;

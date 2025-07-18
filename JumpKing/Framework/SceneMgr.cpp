@@ -7,8 +7,6 @@
 
 void SceneMgr::Init()
 {
-	//scenes.insert({ SceneIds::Dev1 ,new SceneDev1() });
-	//scenes.insert({ SceneIds::Dev2 ,new SceneDev2() });
 	scenes.insert({ SceneIds::Game ,new SceneGame() });
 	scenes.insert({ SceneIds::Title ,new TitleScene() });
 	

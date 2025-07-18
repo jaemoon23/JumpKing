@@ -50,9 +50,9 @@ void Player::Release()
 
 void Player::Reset()
 {
-
 	sortingLayer = SortingLayers::Foreground;
 	sortingOrder = 3;
+	SetActive(true);
 	animator.Play("animations/Idle.csv");
 	character.setTexture(TEXTURE_MGR.Get(texId));
 	SetOrigin(Origins::BC);
@@ -105,7 +105,6 @@ void Player::Update(float dt)
 {
 	animator.Update(dt);
 	
-	
 	// 전 프레임 포지션 저장
 	playerPos = shape.getPosition();
 	
@@ -120,27 +119,19 @@ void Player::Update(float dt)
 			move = true;
 		}
 		
-		if (InputMgr::GetKey(sf::Keyboard::Left))
+		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 		{
 			isHighFall = true;
 			SetScale({ -4.f, GetScale().y });
-			if (isLeftRun)
-			{
-				animator.Play("animations/run.csv");
-				isLeftRun = false;
-				isRightRun = true;
-			}
+			
+			animator.Play("animations/run.csv");
 		}
-		else if (InputMgr::GetKey(sf::Keyboard::Right))
+		else if (InputMgr::GetKeyDown(sf::Keyboard::Right))
 		{
 			isHighFall = true;
 			SetScale({ 4.f, GetScale().y });
-			if (isRightRun)
-			{
-				animator.Play("animations/run.csv");
-				isRightRun = false;
-				isLeftRun = true;
-			}
+		
+			animator.Play("animations/run.csv");
 		}
 		if (InputMgr::GetKey(sf::Keyboard::Right) == 0 && (InputMgr::GetKey(sf::Keyboard::Left) == 0) && isHighFall)
 		{
@@ -208,9 +199,19 @@ void Player::Update(float dt)
 		std::cout << GetPosition().x << ", " << GetPosition().y << std::endl;
 		timer = 0.f;
 		animator.Play("animations/Idle.csv");
+		if (InputMgr::GetKey(sf::Keyboard::Left))
+		{
+			SetScale({ -4.f, GetScale().y });
+
+			animator.Play("animations/run.csv");
+		}
+		else if (InputMgr::GetKey(sf::Keyboard::Right))
+		{
+			SetScale({ 4.f, GetScale().y });
+
+			animator.Play("animations/run.csv");
+		}
 		SetPosition({ playerPos.x, playerPos.y - 10.f});
-		isRightRun = true;
-		isLeftRun = true;
 		left = true;
 		right = true;
 		head = true;
@@ -245,7 +246,7 @@ void Player::Update(float dt)
 				left = false;
 			}
 			SetPosition({ playerPos.x + 50.f, playerPos.y });
-			Velocity.x = -Velocity.x * 0.3f;
+			Velocity.x = -Velocity.x * 0.5f;
 			
 		}
 		if (CheckCollision_RightArm())
@@ -256,7 +257,7 @@ void Player::Update(float dt)
 				right = false;
 			}
 			SetPosition({ playerPos.x - 50.f, playerPos.y });
-			Velocity.x = -Velocity.x * 0.3f;
+			Velocity.x = -Velocity.x * 0.5f;
 			
 		}
 		if (CheckCollision_Head())
@@ -269,8 +270,6 @@ void Player::Update(float dt)
 			SetPosition({ playerPos.x , playerPos.y - 20.f });
 			Velocity.y = std::abs(Velocity.y);
 		}
-		isRightRun = true;
-		isLeftRun = true;
 	}
 	// 공중
 	if (CheckCollision_AirLeg())
