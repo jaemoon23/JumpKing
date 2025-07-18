@@ -66,7 +66,6 @@ void SceneGame::Init()
 	king = (VictoryKing*)AddGameObject(new VictoryKing("graphics/King_Princess_Sprite.png"));
 	princess = (Princess*)AddGameObject(new Princess("graphics/Character_Sprite.png"));
 	
-
 #pragma region UI
 	texIds.push_back("graphics/gui/frame.png");
 	texIds.push_back("graphics/gui/cursor.png");
@@ -93,6 +92,7 @@ void SceneGame::Init()
 
 void SceneGame::Enter()
 {
+	Scene::Enter();
 	SOUND_MGR.PlayBgm("Audio/Nature bg.wav");
 	bounds = FRAMEWORK.GetWindowBounds();
 	windowSize = FRAMEWORK.GetWindowSizeF();
@@ -101,7 +101,7 @@ void SceneGame::Enter()
 
 	uiView.setSize(windowSize);
 	uiView.setCenter(windowSize * 0.5f);
-	Scene::Enter();
+	
 #pragma region BackGround
 	back1_Hit_Mask->SetScale({ 4.f,3.f });
 	back1_Hit_Mask->sortingLayer = SortingLayers::Background;
@@ -321,7 +321,6 @@ void SceneGame::Update(float dt)
 	{
 		victory->SetActive(true);
 		character->SetActive(false);
-		
 		princess->SetActive(false);
 		king->SetActive(true);
 		isVictory = true;
@@ -333,14 +332,6 @@ void SceneGame::Update(float dt)
 	}
 	if (king->GetPosition().y <= 0.f)
 	{
-		isVictory = false;
-		king->SetisVic(false);
-		victory->SetActive(false);
-		character->SetActive(true);
-		princess->SetActive(true);
-		king->SetActive(false);
-		character->SetPosition({ 600.f,3150.f });
-		king->SetPosition({ 920.f,680.f });
 		SCENE_MGR.ChangeScene(SceneIds::Title);
 	}
 		
