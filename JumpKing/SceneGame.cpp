@@ -5,6 +5,7 @@
 #include "Princess.h"
 #include "VictoryKing.h"
 
+
 SceneGame::SceneGame() : Scene(SceneIds::Game)
 {
 }
@@ -62,12 +63,9 @@ void SceneGame::Init()
 	back3 = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage3/back3.png"));
 	back3_Fg = (SpriteGo*)AddGameObject(new SpriteGo("graphics/stage3/fg3.png"));
 
-	
-
 	character = (Player*)AddGameObject(new Player("graphics/Character_Sprite.png"));
 	princess = (Princess*)AddGameObject(new Princess("graphics/Character_Sprite.png"));
 	king = (VictoryKing*)AddGameObject(new VictoryKing("graphics/King_Princess_Sprite.png"));
-
 #pragma region UI
 	texIds.push_back("graphics/gui/frame.png");
 	texIds.push_back("graphics/gui/cursor.png");
@@ -92,7 +90,7 @@ void SceneGame::Init()
 
 void SceneGame::Enter()
 {
-	Scene::Enter();
+
 	SOUND_MGR.PlayBgm("Audio/Nature bg.wav");
 	bounds = FRAMEWORK.GetWindowBounds();
 	windowSize = FRAMEWORK.GetWindowSizeF();
@@ -102,7 +100,7 @@ void SceneGame::Enter()
 	uiView.setSize(windowSize);
 	uiView.setCenter(windowSize * 0.5f);
 	
-
+	Scene::Enter();
 #pragma region BackGround
 	back1_Hit_Mask->SetScale({ 4.f,3.f });
 	back1_Hit_Mask->sortingLayer = SortingLayers::Background;

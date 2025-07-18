@@ -50,6 +50,7 @@ void Player::Release()
 
 void Player::Reset()
 {
+
 	sortingLayer = SortingLayers::Foreground;
 	sortingOrder = 3;
 	animator.Play("animations/Idle.csv");
@@ -66,7 +67,7 @@ void Player::Reset()
 	shape.setOutlineThickness(1.f);
 	shape.setSize({ character.getLocalBounds().width * 3,character.getLocalBounds().height * 3 });
 	shape.setOrigin({ shape.getSize().x * 0.5f,shape.getSize().y });
-	
+
 	// 머리
 	rectHead.setFillColor(sf::Color::Transparent);
 	rectHead.setOutlineColor(sf::Color::Green);
@@ -78,13 +79,13 @@ void Player::Reset()
 	rectLeftArm.setOutlineColor(sf::Color::Green);
 	rectLeftArm.setOutlineThickness(1.f);
 	rectLeftArm.setSize({ 20.f, 20.f });
-	
+
 	// 오른팔
 	rectRightArm.setFillColor(sf::Color::Transparent);
 	rectRightArm.setOutlineColor(sf::Color::Green);
 	rectRightArm.setOutlineThickness(1.f);
 	rectRightArm.setSize({ 20.f, 20.f });
-	
+
 	// 다리
 	rectLeg.setFillColor(sf::Color::Transparent);
 	rectLeg.setOutlineColor(sf::Color::Green);
@@ -96,7 +97,7 @@ void Player::Reset()
 	rectAirLeg.setOutlineColor(sf::Color::Green);
 	rectAirLeg.setOutlineThickness(1.f);
 	rectAirLeg.setSize({ 80.f, 10.f });
-	
+
 	windowBound = FRAMEWORK.GetWindowBounds();
 }
 
@@ -119,17 +120,27 @@ void Player::Update(float dt)
 			move = true;
 		}
 		
-		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
+		if (InputMgr::GetKey(sf::Keyboard::Left))
 		{
 			isHighFall = true;
 			SetScale({ -4.f, GetScale().y });
-			animator.Play("animations/run.csv");
+			if (isLeftRun)
+			{
+				animator.Play("animations/run.csv");
+				isLeftRun = false;
+				isRightRun = true;
+			}
 		}
-		else if (InputMgr::GetKeyDown(sf::Keyboard::Right))
+		else if (InputMgr::GetKey(sf::Keyboard::Right))
 		{
 			isHighFall = true;
 			SetScale({ 4.f, GetScale().y });
-			animator.Play("animations/run.csv");
+			if (isRightRun)
+			{
+				animator.Play("animations/run.csv");
+				isRightRun = false;
+				isLeftRun = true;
+			}
 		}
 		if (InputMgr::GetKey(sf::Keyboard::Right) == 0 && (InputMgr::GetKey(sf::Keyboard::Left) == 0) && isHighFall)
 		{
@@ -198,6 +209,8 @@ void Player::Update(float dt)
 		timer = 0.f;
 		animator.Play("animations/Idle.csv");
 		SetPosition({ playerPos.x, playerPos.y - 10.f});
+		isRightRun = true;
+		isLeftRun = true;
 		left = true;
 		right = true;
 		head = true;
@@ -221,6 +234,7 @@ void Player::Update(float dt)
 	//충돌검사 로직
 	if (CheckCollision_RightArm() || CheckCollision_LeftArm() || CheckCollision_Head())
 	{
+		
 		playerHit = true;
 		animator.Play("animations/hit.csv");
 		if (CheckCollision_LeftArm())
@@ -230,7 +244,7 @@ void Player::Update(float dt)
 				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
 				left = false;
 			}
-			SetPosition({ playerPos.x + 30.f, playerPos.y });
+			SetPosition({ playerPos.x + 50.f, playerPos.y });
 			Velocity.x = -Velocity.x * 0.3f;
 			
 		}
@@ -241,7 +255,7 @@ void Player::Update(float dt)
 				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
 				right = false;
 			}
-			SetPosition({ playerPos.x - 30.f, playerPos.y });
+			SetPosition({ playerPos.x - 50.f, playerPos.y });
 			Velocity.x = -Velocity.x * 0.3f;
 			
 		}
@@ -255,10 +269,14 @@ void Player::Update(float dt)
 			SetPosition({ playerPos.x , playerPos.y - 20.f });
 			Velocity.y = std::abs(Velocity.y);
 		}
+		isRightRun = true;
+		isLeftRun = true;
 	}
 	// 공중
 	if (CheckCollision_AirLeg())
 	{
+		isRightRun = true;
+		isLeftRun = true;
 		move = true;
 		isJumping = true;
 		Velocity.y += gravity * dt;
@@ -269,10 +287,7 @@ void Player::Update(float dt)
 			animator.Play("animations/fall.csv");
 		}
 	}
-	/*if (Utils::CheckCollision(shape, princessShape))
-	{
-		std::cout << "공주" << std::endl;
-	}*/
+	
 }
 
 void Player::Draw(sf::RenderWindow& window)

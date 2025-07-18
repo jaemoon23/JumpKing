@@ -3,6 +3,7 @@
 #include "SpriteGo.h"
 #include "TextGo.h"
 #include "Animator.h"
+#include "TitleScene.h"
 
 class Player;
 class Princess;
@@ -39,7 +40,7 @@ protected:
 
 	sf::Vector2f windowSize;
 	
-
+	TitleScene title;
 	Animator animator;
 
 	bool isVictory = false;

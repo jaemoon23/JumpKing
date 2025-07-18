@@ -62,7 +62,9 @@ protected:
     bool isJumpChargeActive = false;
     bool isJumping = false;
     bool playerHit = false;
- 
+    bool isLeftRun = true;
+    bool isRightRun = true;
+
     float timer = 0.f;
     float gravity = 0.f;
 

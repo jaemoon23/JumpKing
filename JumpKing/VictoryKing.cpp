@@ -72,6 +72,7 @@ void VictoryKing::Update(float dt)
 	}
 	if (GetPosition().y <= 0.f)
 	{
+		isVic = false;
 		SCENE_MGR.ChangeScene(SceneIds::Title);
 	}
 	animator.Update(dt);

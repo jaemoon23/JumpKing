@@ -34,7 +34,6 @@ void TitleScene::Enter()
 	exit = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 	text = (TextGo*)AddGameObject(new TextGo("fonts/ttf_entercommand_bold.ttf"));
 	
-	
 	bounds = FRAMEWORK.GetWindowBounds();
 	
 	title_logo->SetPosition({ bounds.width * 0.5f, bounds.height * 0.3f });
@@ -75,25 +74,12 @@ void TitleScene::Enter()
 	exit->sortingLayer = SortingLayers::UI;
 	exit->sortingOrder = 0;
 
-	text->SetString("According to legend, there¡¯s an pretty princess waiting at the summit");
-	text->SetCharacterSize(80);
-	text->SetFillColor(sf::Color::White);
-	text->SetOrigin(Origins::MC);
-	text->SetPosition({ bounds.width * 0.5f, bounds.height * 0.5f });
-	text->SetActive(false);
-	text->sortingLayer = SortingLayers::UI;
-	text->sortingOrder = 0;
-
 	cursor->SetPosition({ start->GetPosition().x - 150.f , start->GetPosition().y + 50.f });
 	cursor->SetOrigin(Origins::MC);
 	cursor->SetActive(false);
 	cursor->SetScale({ 4.f,3.f });
 	cursor->sortingLayer = SortingLayers::UI;
 	cursor->sortingOrder = 1;
-	
-	
-	
-	
 	Scene::Enter();
 }
 
@@ -178,24 +164,7 @@ void TitleScene::Update(float dt)
 				SOUND_MGR.PlayBgm("Audio/menu_open.wav");
 				text->SetActive(true);
 				isPressTitle = false;
-				SCENE_MGR.ChangeScene(SceneIds::Game);
-				if (fadeIn)
-				{
-					fadeTimer += dt;
-					float progress = fadeTimer / fadeDuration;
-					if (progress >= 1.f)
-					{
-						progress = 1.0f;
-					}
-					fadeAlpha = 255.0f * (1.0f - progress);
-					text->SetFillColor(sf::Color(255, 255, 255, fadeAlpha));
-					
-				}
-				if (!fadeIn)
-				{
-					
-				}
-				
+				SCENE_MGR.ChangeScene(SceneIds::Game);	
 			}
 			if (isPressExit)
 			{
