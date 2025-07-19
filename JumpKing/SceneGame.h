@@ -36,12 +36,15 @@ protected:
 	VictoryKing* king;
 
 	sf::FloatRect bounds;
+	sf::RectangleShape shape;
 
 	sf::Vector2f windowSize;
 	
 	Animator animator;
+	sf::Vector2f pos = { 0.f,0.f };
 
 	bool isVictory = false;
+	bool isOutOfBounds = false;
 	bool isPressTitle = true;
 	bool isPressExit = false;
 	bool isEsc = false;

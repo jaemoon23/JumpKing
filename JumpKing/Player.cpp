@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Player.h"
 
 Player::Player(const std::string name) : GameObject(name)
@@ -50,6 +50,42 @@ void Player::Release()
 
 void Player::Reset()
 {
+#pragma region ë©¤ë²„ë³€ìˆ˜ ì´ˆê¸°í™”
+	maskSize = { 0,0 };
+
+	rectLegPos = { 0.f,0.f };
+	rectAirLegPos = { 0.f,0.f };
+	rightArmPos = { 0.f,0.f };
+	leftArmPos = { 0.f,0.f };
+	headPos = { 0.f,0.f };
+
+	playerPos = { 0.f,0.f };
+	scaleX = 0.f;
+	scaleY = 0.f;
+
+	pos = { 0.f,0.f };
+	direction = { 1.f,0.f };
+	jumpDirection = { 0.f,0.f };
+	Velocity = { 400.f,0.f };
+
+	left = true;
+	right = true;
+	head = true;
+	move = true;
+	Air = true;
+	moveHit = false;
+
+	isHighFall = true;
+	isJumpChargeActive = false;
+	isJumping = false;
+	playerHit = false;
+
+	timer = 0.f;
+	gravity = 0.f;
+
+	jumpCount = 0;
+#pragma endregion
+
 	sortingLayer = SortingLayers::Foreground;
 	sortingOrder = 3;
 	SetActive(true);
@@ -60,39 +96,39 @@ void Player::Reset()
 	SetScale({ 4.0f,3.0f });
 	SetRotation(0);
 
-	// È÷Æ®¹Ú½º
-	// ÀüÃ¼
+	// íˆíŠ¸ë°•ìŠ¤
+	// ì „ì²´
 	shape.setFillColor(sf::Color::Transparent);
 	shape.setOutlineColor(sf::Color::Green);
 	shape.setOutlineThickness(1.f);
 	shape.setSize({ character.getLocalBounds().width * 3,character.getLocalBounds().height * 3 });
 	shape.setOrigin({ shape.getSize().x * 0.5f,shape.getSize().y });
 
-	// ¸Ó¸®
+	// ë¨¸ë¦¬
 	rectHead.setFillColor(sf::Color::Transparent);
 	rectHead.setOutlineColor(sf::Color::Green);
 	rectHead.setOutlineThickness(1.f);
 	rectHead.setSize({ 40.f, 20.f });
 
-	// ¿ŞÆÈ
+	// ì™¼íŒ”
 	rectLeftArm.setFillColor(sf::Color::Transparent);
 	rectLeftArm.setOutlineColor(sf::Color::Green);
 	rectLeftArm.setOutlineThickness(1.f);
 	rectLeftArm.setSize({ 20.f, 20.f });
 
-	// ¿À¸¥ÆÈ
+	// ì˜¤ë¥¸íŒ”
 	rectRightArm.setFillColor(sf::Color::Transparent);
 	rectRightArm.setOutlineColor(sf::Color::Green);
 	rectRightArm.setOutlineThickness(1.f);
 	rectRightArm.setSize({ 20.f, 20.f });
 
-	// ´Ù¸®
+	// ë‹¤ë¦¬
 	rectLeg.setFillColor(sf::Color::Transparent);
 	rectLeg.setOutlineColor(sf::Color::Green);
 	rectLeg.setOutlineThickness(1.f);
 	rectLeg.setSize({ 60.f, 10.f });
 
-	// °øÁß
+	// ê³µì¤‘
 	rectAirLeg.setFillColor(sf::Color::Transparent);
 	rectAirLeg.setOutlineColor(sf::Color::Green);
 	rectAirLeg.setOutlineThickness(1.f);
@@ -104,11 +140,11 @@ void Player::Reset()
 void Player::Update(float dt)
 {
 	animator.Update(dt);
-	
-	// Àü ÇÁ·¹ÀÓ Æ÷Áö¼Ç ÀúÀå
+
+	// ì „ í”„ë ˆì„ í¬ì§€ì…˜ ì €ì¥
 	playerPos = shape.getPosition();
 	
-	// ÀÌµ¿·ÎÁ÷
+	// ì´ë™ë¡œì§
 	direction.x = InputMgr::GetAxis(Axis::Horizontal);
 	if (!isJumpChargeActive)
 	{
@@ -122,6 +158,7 @@ void Player::Update(float dt)
 		if (InputMgr::GetKeyDown(sf::Keyboard::Left))
 		{
 			isHighFall = true;
+			moveHit = true;
 			SetScale({ -4.f, GetScale().y });
 			
 			animator.Play("animations/run.csv");
@@ -129,6 +166,7 @@ void Player::Update(float dt)
 		else if (InputMgr::GetKeyDown(sf::Keyboard::Right))
 		{
 			isHighFall = true;
+			moveHit = true;
 			SetScale({ 4.f, GetScale().y });
 		
 			animator.Play("animations/run.csv");
@@ -143,7 +181,7 @@ void Player::Update(float dt)
 		SetPosition(pos);
 	}
 	
-	// Â÷ÁöÁ¡ÇÁ ·ÎÁ÷
+	// ì°¨ì§€ì í”„ ë¡œì§
 	if (!isJumping)
 	{
 		if (InputMgr::GetKey(sf::Keyboard::Space))
@@ -190,23 +228,25 @@ void Player::Update(float dt)
 		SetPosition(pos);
 	}
 
-	// È÷Æ®¹Ú½º
+	// íˆíŠ¸ë°•ìŠ¤
 	HitBox();
-	// ÂøÁö
+	// ì°©ì§€
 	if (CheckCollision_Leg())
 	{
-		std::cout << "ÂøÁö" << std::endl;
+		std::cout << "ì°©ì§€" << std::endl;
 		std::cout << GetPosition().x << ", " << GetPosition().y << std::endl;
 		timer = 0.f;
 		animator.Play("animations/Idle.csv");
 		if (InputMgr::GetKey(sf::Keyboard::Left))
 		{
+			moveHit = true;
 			SetScale({ -4.f, GetScale().y });
 
 			animator.Play("animations/run.csv");
 		}
 		else if (InputMgr::GetKey(sf::Keyboard::Right))
 		{
+			moveHit = true;
 			SetScale({ 4.f, GetScale().y });
 
 			animator.Play("animations/run.csv");
@@ -232,12 +272,16 @@ void Player::Update(float dt)
 		}
 		Velocity.y = 0.f;
 	}
-	//Ãæµ¹°Ë»ç ·ÎÁ÷
+	//ì¶©ëŒê²€ì‚¬ ë¡œì§
 	if (CheckCollision_RightArm() || CheckCollision_LeftArm() || CheckCollision_Head())
 	{
 		
 		playerHit = true;
-		animator.Play("animations/hit.csv");
+		if (!moveHit)
+		{
+			animator.Play("animations/hit.csv");
+		}
+		// ì™¼ìª½
 		if (CheckCollision_LeftArm())
 		{
 			if (left)
@@ -245,10 +289,23 @@ void Player::Update(float dt)
 				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
 				left = false;
 			}
-			SetPosition({ playerPos.x + 50.f, playerPos.y });
-			Velocity.x = -Velocity.x * 0.5f;
+			sf::Vector2f tempPos = GetPosition();
+			for (int i = 0; i < 10; ++i)
+			{
+				std::cout << i << std::endl;
+				if (!CheckCollision_LeftArm())
+				{
+					break;
+				}
+				playerPos.x += 1.f;
+				SetPosition(playerPos);
+				HitBox();
+			}
 			
+			std::cout << "ì™¼ìª½ " << GetPosition().x << ", " << GetPosition().y << std::endl;
+			Velocity.x = -Velocity.x * 0.5f;
 		}
+		// ì˜¤ë¥¸ìª½
 		if (CheckCollision_RightArm())
 		{
 			if (right)
@@ -256,10 +313,22 @@ void Player::Update(float dt)
 				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
 				right = false;
 			}
-			SetPosition({ playerPos.x - 50.f, playerPos.y });
+			for (int i = 0; i < 10; ++i)
+			{
+				std::cout << i << std::endl;
+				if (!CheckCollision_RightArm())
+				{
+					break;
+				}
+				playerPos.x -= 1.f;
+				SetPosition(playerPos);
+				HitBox();
+			}
+			std::cout << "ì˜¤ë¥¸ìª½ " << GetPosition().x << ", " << GetPosition().y << std::endl;
 			Velocity.x = -Velocity.x * 0.5f;
-			
 		}
+
+		// ë¨¸ë¦¬
 		if (CheckCollision_Head())
 		{
 			if (head)
@@ -267,16 +336,26 @@ void Player::Update(float dt)
 				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
 				head = false;
 			}
-			SetPosition({ playerPos.x , playerPos.y - 20.f });
+			for (int i = 0; i < 10; ++i)
+			{
+				if (!CheckCollision_Head())
+				{
+					break;
+				}
+				else
+				{
+					std::cout << "ë¨¸ë¦¬ 1í”½ì…€ì”© ë¯¸ëŠ”ì¤‘" << std::endl;
+					SetPosition({ playerPos.x ,position.y - 1.f });
+				}
+			}
 			Velocity.y = std::abs(Velocity.y);
 		}
 	}
-	// °øÁß
+	// ê³µì¤‘
 	if (CheckCollision_AirLeg())
 	{
-		isRightRun = true;
-		isLeftRun = true;
 		move = true;
+		moveHit = false;
 		isJumping = true;
 		Velocity.y += gravity * dt;
 		pos += Velocity * dt;
@@ -350,7 +429,7 @@ void Player::HitBox()
 	shape.setPosition(GetPosition().x, GetPosition().y);
 }
 
-// ´Ù¸®
+// ë‹¤ë¦¬
 bool Player::CheckCollision_Leg()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
@@ -383,7 +462,7 @@ bool Player::CheckCollision_Leg()
 	return isCollision_Leg;
 
 }
-// °øÁß
+// ê³µì¤‘
 bool Player::CheckCollision_AirLeg()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
@@ -415,7 +494,8 @@ bool Player::CheckCollision_AirLeg()
 	}
 	return isCollision_AirLeg;
 }
-// ¿À¸¥ÂÊ
+
+// ì˜¤ë¥¸ìª½
 bool Player::CheckCollision_RightArm()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
@@ -439,14 +519,15 @@ bool Player::CheckCollision_RightArm()
 	{
 		if (color == sf::Color::Blue)
 		{
-			std::cout << "¿À¸¥ÂÊ Ãæµ¹" << std::endl;
+			std::cout << "ì˜¤ë¥¸ìª½ ì¶©ëŒ" << std::endl;
 			isCollision_RightArm = true;
 			break;
 		}
 	}
 	return isCollision_RightArm;
 }
-// ¿ŞÂÊ
+
+// ì™¼ìª½
 bool Player::CheckCollision_LeftArm()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
@@ -470,14 +551,15 @@ bool Player::CheckCollision_LeftArm()
 	{
 		if (color == sf::Color::Blue)
 		{
-			std::cout << "¿ŞÂÊ Ãæµ¹" << std::endl;
+			std::cout << "ì™¼ìª½ ì¶©ëŒ" << std::endl;
 			isCollision_leftArm = true;
 			break;
 		}
 	}
 	return isCollision_leftArm;
 }
-// ¸Ó¸®
+
+// ë¨¸ë¦¬
 bool Player::CheckCollision_Head()
 {
 	scaleX = 1.f / std::abs(character.getScale().x);
@@ -503,12 +585,10 @@ bool Player::CheckCollision_Head()
 	{
 		if (color == sf::Color::Blue)
 		{
-			std::cout << "¸Ó¸® Ãæµ¹" << std::endl;
+			std::cout << "ë¨¸ë¦¬ ì¶©ëŒ" << std::endl;
 			isCollision_Head = true;
 			break;
 		}
 	}
 	return isCollision_Head;
 }
-
-

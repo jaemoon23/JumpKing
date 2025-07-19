@@ -93,6 +93,21 @@ void SceneGame::Init()
 void SceneGame::Enter()
 {
 	Scene::Enter();
+#pragma region 멤버변수 초기화
+	isVictory = false;
+	isPressTitle = true;
+	isPressExit = false;
+	isEsc = false;
+	isOutOfBounds = false;
+	pos = { 0.f,0.f };
+	hour = 0;
+	minute = 0;
+	second = 0;
+	shape = character->GetShape();
+	time = 0.f;
+
+	count = 0;
+#pragma endregion
 	SOUND_MGR.PlayBgm("Audio/Nature bg.wav");
 	bounds = FRAMEWORK.GetWindowBounds();
 	windowSize = FRAMEWORK.GetWindowSizeF();
@@ -232,7 +247,7 @@ void SceneGame::Update(float dt)
 	count = character->GetJumpCount();
 	menu3->SetString("Jump: " + std::to_string(count));
 
-
+	
 	if (InputMgr::GetKeyDown(sf::Keyboard::Escape))
 	{
 		SOUND_MGR.PlaySfx("Audio/menu_open.wav");
@@ -296,50 +311,51 @@ void SceneGame::Update(float dt)
 		}
 	}
 	
-	if (!isVictory)
+	if (character->GetPosition().y < 2160)
 	{
-		if (character->GetPosition().y < 2160)
-		{
-			worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
-		}
-		else if (character->GetPosition().y > 2160)
-		{
-			worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 2160.f);
-		}
+		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
+	}
+	else if (character->GetPosition().y > 2160)
+	{
+		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 2160.f);
+	}
 
-		if ((character->GetPosition().y < 1080) && character->GetPosition().y < 2160)
-		{
-			worldView.setCenter(windowSize * 0.5f);
-		}
-		else if (character->GetPosition().y > 1080 && character->GetPosition().y < 2160)
-		{
-			worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
-		}
+	if ((character->GetPosition().y < 1080) && character->GetPosition().y < 2160)
+	{
+		worldView.setCenter(windowSize * 0.5f);
+	}
+	else if (character->GetPosition().y > 1080 && character->GetPosition().y < 2160)
+	{
+		princess->SetActive(true);
+		worldView.setCenter(windowSize.x * 0.5f, windowSize.y * 0.5f + 1080.f);
 	}
 	
-	if (Utils::CheckCollision(character->GetShape(), princess->GetShape()) && !isVictory)
+	if (Utils::CheckCollision(character->GetShape(), princess->GetShape()) && princess->GetActive())
 	{
+		std::cout << pos.x << ", " << pos.y << std::endl;
 		victory->SetActive(true);
 		character->SetActive(false);
 		princess->SetActive(false);
 		king->SetActive(true);
-		isVictory = true;
-		std::cout << "공주" << std::endl;
-	}
-	if (InputMgr::GetKeyDown(sf::Keyboard::Space) && isVictory)
-	{
 		king->SetisVic(true);
+		std::cout << "공주 아프다" << std::endl;
 	}
 	if (king->GetPosition().y <= 0.f)
 	{
+		character->SetPosition({ 600.f,3150.f });
+		victory->SetActive(false);
+		king->SetisVic(false);
+		king->SetActive(false);
+		isOutOfBounds = true;
 		SCENE_MGR.ChangeScene(SceneIds::Title);
 	}
-		
 	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left))
 	{
 		sf::Vector2i mouse = InputMgr::GetMousePosition();
 		std::cout << mouse.x << "," << mouse.y << std::endl;
 	}
+
+	
 	Scene::Update(dt);
 }
 

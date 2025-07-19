@@ -49,6 +49,9 @@ void VictoryKing::Release()
 
 void VictoryKing::Reset()
 {
+	isVic = false;
+	direction = { 0.f, 0.f };
+	pos = { 0.f, 0.f };
 
 	victoryKing.setTexture(TEXTURE_MGR.Get(texId));
 	sortingLayer = SortingLayers::Foreground;
@@ -71,10 +74,7 @@ void VictoryKing::Update(float dt)
 		pos.y += direction.y * 300.f * dt;
 		SetPosition(pos);
 	}
-	if (GetPosition().y <= 0.f)
-	{
-		isVic = false;
-	}
+	
 	animator.Update(dt);
 }
 

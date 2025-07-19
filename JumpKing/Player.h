@@ -38,14 +38,15 @@ protected:
     sf::Vector2f headPos;
 
     sf::Vector2f playerPos = { 0.f,0.f };
-    float scaleX;
-    float scaleY;
+    float scaleX = 0.f;
+    float scaleY = 0.f;
 
     bool left = true;
     bool right = true;
     bool head = true;
     bool move = true;
     bool Air = true;
+    bool moveHit = false;
 
     // 그리기
     std::string texId = "graphics/Character_Sprite.png";
@@ -53,7 +54,7 @@ protected:
     Animator animator;
 
     // 이동
-    sf::Vector2f pos;
+    sf::Vector2f pos = { 0.f,0.f };
     sf::Vector2f direction = { 1.f,0.f };
     sf::Vector2f jumpDirection = { 0.f,0.f };
     sf::Vector2f Velocity = { 400.f,0.f };
@@ -62,8 +63,6 @@ protected:
     bool isJumpChargeActive = false;
     bool isJumping = false;
     bool playerHit = false;
-    bool isLeftRun = true;
-    bool isRightRun = true;
 
     float timer = 0.f;
     float gravity = 0.f;
@@ -93,8 +92,17 @@ public:
     bool CheckCollision_RightArm();
     bool CheckCollision_LeftArm();
     bool CheckCollision_Head();
+
+    bool CheckCollision_RightArm_White();
+    bool CheckCollision_LeftArm_White();
+    bool CheckCollision_Head_White();
+
+
     sf::RectangleShape GetShape() const { return shape; }
     int GetJumpCount() { return jumpCount; }
+    void SetGravity(float f) { gravity = f; }
+    void SetVelocity(sf::Vector2f f) { Velocity = f; }
+    
 
 };
 

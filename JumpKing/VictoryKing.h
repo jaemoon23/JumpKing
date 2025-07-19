@@ -8,8 +8,8 @@ class VictoryKing :
 protected:
     sf::Sprite victoryKing;
     std::string texId = "graphics/King_Princess_Sprite.png";
-    sf::Vector2f direction{ 0.f, 0.f };
-    sf::Vector2f pos;
+    sf::Vector2f direction = { 0.f, 0.f };
+    sf::Vector2f pos = { 0.f, 0.f };
     SceneGame game;
     Animator animator;
 

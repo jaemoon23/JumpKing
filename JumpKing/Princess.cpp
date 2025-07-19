@@ -49,6 +49,7 @@ void Princess::Release()
 
 void Princess::Reset()
 {
+	SetActive(false);
 	sortingLayer = SortingLayers::Foreground;
 	sortingOrder = 3;
 	animator.Play("animations/princess.csv");
@@ -56,6 +57,7 @@ void Princess::Reset()
 	SetPosition({ 920.f,680.f });
 	SetScale({ 4.0f,3.0f });
 	SetRotation(0);
+	
 	// °øÁÖ
 	princessShape.setFillColor(sf::Color::Transparent);
 	princessShape.setOutlineColor(sf::Color::Green);
