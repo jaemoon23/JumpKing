@@ -41,6 +41,7 @@ protected:
     float scaleX = 0.f;
     float scaleY = 0.f;
 
+    bool leg = true;
     bool left = true;
     bool right = true;
     bool head = true;
@@ -88,15 +89,16 @@ public:
 
     void HitBox();
     bool CheckCollision_Leg();
+    bool CheckCollision_Leg(const sf::Vector2f& testPos);
     bool CheckCollision_AirLeg();
+
     bool CheckCollision_RightArm();
     bool CheckCollision_LeftArm();
+   
+    bool CheckCollision_RightArm(const sf::Vector2f & testPos);
+    bool CheckCollision_LeftArm(const sf::Vector2f& testPos);
+
     bool CheckCollision_Head();
-
-    bool CheckCollision_RightArm_White();
-    bool CheckCollision_LeftArm_White();
-    bool CheckCollision_Head_White();
-
 
     sf::RectangleShape GetShape() const { return shape; }
     int GetJumpCount() { return jumpCount; }

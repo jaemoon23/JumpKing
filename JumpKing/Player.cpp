@@ -281,7 +281,8 @@ void Player::Update(float dt)
 		{
 			animator.Play("animations/hit.csv");
 		}
-		// 왼쪽
+
+#pragma region 왼쪽
 		if (CheckCollision_LeftArm())
 		{
 			if (left)
@@ -289,22 +290,29 @@ void Player::Update(float dt)
 				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
 				left = false;
 			}
-			sf::Vector2f tempPos = GetPosition();
+			sf::Vector2f offset(0.f, 0.f);
 			for (int i = 0; i < 10; ++i)
 			{
 				std::cout << i << std::endl;
-				if (!CheckCollision_LeftArm())
+				offset.x += 1.f;
+				if (!CheckCollision_LeftArm(GetPosition() + offset))
 				{
+					offset.x += 1.f;
 					break;
 				}
-				playerPos.x += 1.f;
-				SetPosition(playerPos);
+			}
+			sf::Vector2f finalPos = GetPosition() + offset;
+			if (!CheckCollision_LeftArm(finalPos))
+			{
+				SetPosition(finalPos);
 				HitBox();
 			}
-			
 			std::cout << "왼쪽 " << GetPosition().x << ", " << GetPosition().y << std::endl;
-			Velocity.x = -Velocity.x * 0.5f;
+			Velocity.x = -Velocity.x * 0.7f;
 		}
+#pragma endregion
+
+#pragma region 오른쪽
 		// 오른쪽
 		if (CheckCollision_RightArm())
 		{
@@ -313,20 +321,26 @@ void Player::Update(float dt)
 				SOUND_MGR.PlaySfx("Audio/king_bump.wav");
 				right = false;
 			}
+			sf::Vector2f offset(0.f, 0.f);
 			for (int i = 0; i < 10; ++i)
 			{
 				std::cout << i << std::endl;
-				if (!CheckCollision_RightArm())
+				offset.x -= 1.f;
+				if (!CheckCollision_RightArm(GetPosition() + offset))
 				{
 					break;
 				}
-				playerPos.x -= 1.f;
-				SetPosition(playerPos);
+			}
+			sf::Vector2f finalPos = GetPosition() + offset;
+			if (!CheckCollision_LeftArm(finalPos))
+			{
+				SetPosition(finalPos);
 				HitBox();
 			}
 			std::cout << "오른쪽 " << GetPosition().x << ", " << GetPosition().y << std::endl;
-			Velocity.x = -Velocity.x * 0.5f;
+			Velocity.x = -Velocity.x * 0.7f;
 		}
+#pragma endregion
 
 		// 머리
 		if (CheckCollision_Head())
@@ -345,7 +359,7 @@ void Player::Update(float dt)
 				else
 				{
 					std::cout << "머리 1픽셀씩 미는중" << std::endl;
-					SetPosition({ playerPos.x ,position.y - 1.f });
+					SetPosition({ playerPos.x ,position.y + 1.f });
 				}
 			}
 			Velocity.y = std::abs(Velocity.y);
@@ -494,7 +508,6 @@ bool Player::CheckCollision_AirLeg()
 	}
 	return isCollision_AirLeg;
 }
-
 // 오른쪽
 bool Player::CheckCollision_RightArm()
 {
@@ -526,7 +539,6 @@ bool Player::CheckCollision_RightArm()
 	}
 	return isCollision_RightArm;
 }
-
 // 왼쪽
 bool Player::CheckCollision_LeftArm()
 {
@@ -557,6 +569,65 @@ bool Player::CheckCollision_LeftArm()
 		}
 	}
 	return isCollision_leftArm;
+}
+
+bool Player::CheckCollision_RightArm(const sf::Vector2f& testPos)
+{
+	scaleX = 1.f / std::abs(character.getScale().x);
+	scaleY = 1.f / std::abs(character.getScale().y);
+
+	sf::Vector2f testArmPos = rectLeftArm.getPosition() + (testPos - GetPosition());
+
+	sf::Color pixelColor_rightArm[4];
+	sf::Vector2u maskCoord[4] =
+	{
+		sf::Vector2u(testArmPos.x * scaleX, testArmPos.y * scaleY),
+		sf::Vector2u((testArmPos.x + 20.f) * scaleX, testArmPos.y * scaleY),
+		sf::Vector2u(testArmPos.x * scaleX, (testArmPos.y + 20.f) * scaleY),
+		sf::Vector2u((testArmPos.x + 20.f) * scaleX, (testArmPos.y + 20.f) * scaleY),
+	};
+
+	for (int i = 0; i < 4; ++i)
+	{
+		sf::Color color = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
+	}
+	for (auto& color : pixelColor_rightArm)
+	{
+		if (color == sf::Color::Blue)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+bool Player::CheckCollision_LeftArm(const sf::Vector2f& testPos)
+{
+	scaleX = 1.f / std::abs(character.getScale().x);
+	scaleY = 1.f / std::abs(character.getScale().y);
+
+	sf::Vector2f testArmPos = rectLeftArm.getPosition() + (testPos - GetPosition());
+
+	sf::Color pixelColor_LeftArm[4];
+	sf::Vector2u maskCoord[4] =
+	{
+		sf::Vector2u(testArmPos.x * scaleX, testArmPos.y * scaleY),
+		sf::Vector2u((testArmPos.x + 20.f) * scaleX, testArmPos.y * scaleY),
+		sf::Vector2u(testArmPos.x * scaleX, (testArmPos.y + 20.f) * scaleY),
+		sf::Vector2u((testArmPos.x + 20.f) * scaleX, (testArmPos.y + 20.f) * scaleY),
+	};
+
+	for (int i = 0; i < 4; ++i)
+	{
+		sf::Color color = maskImage.getPixel(maskCoord[i].x, maskCoord[i].y);
+	}
+	for (auto& color : pixelColor_LeftArm)
+	{
+		if (color == sf::Color::Blue)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 // 머리

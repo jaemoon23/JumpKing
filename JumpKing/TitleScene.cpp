@@ -151,7 +151,7 @@ void TitleScene::Update(float dt)
 			isPressTitle = false;
 			isPressExit = true;
 		}
-		if (InputMgr::GetKeyDown(sf::Keyboard::Space))
+		if (InputMgr::GetKeyDown(sf::Keyboard::Return))
 		{
 			if (isPressTitle)
 			{
