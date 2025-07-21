@@ -281,7 +281,6 @@ void Player::Update(float dt)
 		{
 			animator.Play("animations/hit.csv");
 		}
-
 #pragma region 왼쪽
 		if (CheckCollision_LeftArm())
 		{
